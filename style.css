@@ -1,0 +1,143 @@
+* {
+  font-family: "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: hidden;
+}
+
+#everything-outer {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+#mouse-message-outer {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: auto;
+  width: auto;
+  max-width: 300px;
+  padding: 10px;
+  opacity: 1;
+  transition: opacity 0.25s;
+  -webkit-transition: opacity 0.25s;
+}
+
+#mouse-message-outer.hidden {
+  opacity: 0;
+}
+
+#mouse-message-header {
+  font-weight: 700;
+  font-size: 35px;
+}
+
+#mouse-message {
+  font-weight: 300;
+  font-size: 20px;
+}
+
+.pretty {
+  transform: none;
+  opacity: 1;
+  transition: transform 0.25s, opacity 0.25s;
+  -webkit-transition: transform 0.25s, opacity 0.25s;
+}
+
+.pretty.delay1 {
+  transition-delay: 0.1s;
+  -webkit-transition-delay: 0.1s;
+}
+
+.pretty.hidden {
+  transform: translateY(-20px);
+  opacity: 0;
+}
+
+
+/*game elements*/
+
+#game-outer {
+  position: absolute;
+  height: 100vh;
+  width: 100vh;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  border: 0px solid black;
+}
+
+#hover-lose {
+  position: absolute;
+  height: 100vh;
+  width: 100vh;
+}
+
+.game-elem {
+  pointer-events: auto;
+  position: absolute;
+  display: block;
+  z-index: 1;
+}
+
+.game-elem.start {
+  background-color: rgba(200, 200, 200, 1);
+  z-index: 100;
+  transform: scale(1);
+  border-radius: 100%;
+  /*animation: entice 1s infinite;
+  -webkit-animation: entice 1s infinite;*/
+  transition: transform 0.25s;
+  -webkit-transition: transform 0.25s;
+}
+
+@keyframes entice {
+  0% {transform: scale(1);}
+  50% {transform: scale(1.05);}
+  100% {transform: scale(1);}
+}
+
+.start.disabled {
+  transform: scale(0);
+  animation: none;
+  -webkit-animation: none;
+}
+
+.game-elem.end {
+  background-color: yellow;
+  z-index: 100;
+}
+
+.game-elem.left {
+  background-color: blue;
+  cursor: w-resize;
+}
+
+.game-elem.right {
+  background-color: purple;
+  cursor: e-resize;
+}
+
+.game-elem.up {
+  background-color: orange;
+  cursor: n-resize;
+}
+
+.game-elem.down {
+  background-color: pink;
+  cursor: s-resize;
+}
+
+.game-elem.hidden:not(.start) {
+  background-color: transparent !important;
+}
+
+.game-elem.hide-pointers:not(.start) {
+  pointer-events: none !important;
+}
