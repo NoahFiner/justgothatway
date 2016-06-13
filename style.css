@@ -15,6 +15,7 @@ body {
 }
 
 #mouse-message-outer {
+  z-index: 1010000;
   pointer-events: none;
   position: absolute;
   left: 0;
@@ -111,27 +112,27 @@ body {
 
 .game-elem.end {
   background-color: yellow;
-  z-index: 100;
+  z-index: 100 !important;
 }
 
 .game-elem.left {
   background-color: blue;
-  cursor: w-resize;
+  cursor: w-resize !important;
 }
 
 .game-elem.right {
   background-color: purple;
-  cursor: e-resize;
+  cursor: e-resize !important;
 }
 
 .game-elem.up {
   background-color: orange;
-  cursor: n-resize;
+  cursor: n-resize !important;
 }
 
 .game-elem.down {
   background-color: pink;
-  cursor: s-resize;
+  cursor: s-resize !important;
 }
 
 .game-elem.hidden:not(.start) {

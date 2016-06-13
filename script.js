@@ -2,16 +2,29 @@ var mx = 0; // mouse x
 var my = 0; // mouse y
 var wh = window.innerHeight;
 var ww = window.innerWidth;
-var mouseMessageFadeTimeout;
+var mouseMessageFadeTimeout, mouseMessageStartTimeout;
 var levelStarted = false;
 var currLevel = 0;
+var timeLeft = 0;
+var drawX = 0;
+var drawY = 0;
 
 //shows the level. development only
 var hidePath = true;
 
+//success messages
+successHeaders = ["That was dank.", "You did it!", "Great work!", "Excellent work.", "That was surprisingly quick.", "You're good at just going that way."];
+successInfos = ["Great work back there!", "That was some top-notch work.", "I doubt you'll do better next time.", "Can you really beat that?", "It just gets harder from here.", "I doubt you can do better than that though.", "Your parents would be proud of you."];
+
+//failure messages
+failureHeaders = ["Yikes!", "Whoops", "Nope", "Really?", "Come on", "Wow", "It was that way!", "That was it?", "Ugh..."];
+failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just had to go that way.", "You should have gone that way, seriously.", "Why didn't you just go that way?", "All you had to do was go that way.", "If you had just gone that way, maybe things would have turned out better.", "How could someone not just go that way?", "Was it that hard to just go that way?"];
+
+//t = time
 var levels = [
-  [['s', 10, 10, 10, 10], ['r', 10, 10, 80, 10], ['d', 80, 10, 10, 50], ['l', 50, 60, 40, 10], ['e', 50, 60, 10, 10]],
-  [['s', 80, 10, 10, 10], ['l', 10, 10, 80, 10], ['d', 10, 10, 10, 50], ['r', 10, 60, 40, 10], ['e', 50, 60, 10, 10]]
+  [['t', 10000], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10]],
+  [['t', 10000], ['s', 10, 10, 10], ['r', 80, 10], ['d', 50, 10], ['l', 40, 10], ['u', 20, 10], ['l', 30, 10], ['d', 20, 10], ['l', 20, 10], ['e', 10]],
+  [['t', 20000], ['s', 80, 10, 10], ['l', 50, 10], ['d', 30, 10], ['r', 40, 10], ['d', 30, 10], ['l', 60, 10], ['u', 30, 10], ['e', 10]],
 ];
 
 var updateSizes = function() {
@@ -21,9 +34,40 @@ var updateSizes = function() {
 
 var gameElemClasses = {l: "left", r: "right", u: "up", d: "down", s: "start", e: "end"};
 
-//a should be ['l/r/u/p/s/e', x1, y1, w, h] in %
+//a should be ['l/r/u/p', dist, width] in % or ['t', time] or ['s', x, y, width] or ['e', width]
 var createElem = function(a) {
-  $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='top: "+a[2]+"%; left: "+a[1]+"%; height: "+a[4]+"%; width: "+a[3]+"%'></div>");
+  switch(a[0]) {
+    case 't': //timer
+      timeLeft = a[1];
+      break;
+    case 's': //start
+      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+a[1]+"%; top: "+a[2]+"%; height: "+a[3]+"%; width: "+a[3]+"%'></div>");
+      drawX = a[1];
+      drawY = a[2];
+      break;
+    case 'r': //right
+      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[2]+"%; width: "+a[1]+"%'></div>");
+      drawX += a[1];
+      break;
+    case 'd': //down
+      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[1]+"%; width: "+a[2]+"%'></div>");
+      drawY += a[1];
+      break;
+    case 'l': //left
+      drawX -= (a[1] - a[2]);
+      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[2]+"%; width: "+a[1]+"%'></div>");
+      break;
+    case 'u': //up
+      drawY -= (a[1] - a[2]);
+      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[1]+"%; width: "+a[2]+"%'></div>");
+      break;
+    case 'e': //end
+      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[1]+"%; width: "+a[1]+"%'></div>");
+      break;
+    default: //old system
+      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='top: "+a[2]+"%; left: "+a[1]+"%; height: "+a[4]+"%; width: "+a[3]+"%'></div>");
+      break;
+  }
 };
 
 var initLevel = function(level, wonParam) {
@@ -40,6 +84,7 @@ var initLevel = function(level, wonParam) {
     }
   }
   $(".game-elem").addClass("hide-pointers");
+  $(".game-elem").focus();
   $(".start").mouseenter(function() {
     instructions("", "", false);
     if(levelStarted === false) {
@@ -54,14 +99,15 @@ var startLevel = function() {
   levelStarted = true;
   $("#hover-lose").mouseenter(function() { //lose
     if(levelStarted) {
-      instructions("Whoops", "Looks like someone was too reckless.", true);
+      instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);
       initLevel(levels[currLevel]);
     }
   });
   $(".end").mouseenter(function() {
     if(levelStarted) {
-      instructions("You did it", "That was some top-notch work back there.", true);
-      initLevel(levels[currLevel + 1], true);
+      instructions(successHeaders[Math.floor(Math.random()*successHeaders.length)], successInfos[Math.floor(Math.random()*successInfos.length)], true);
+      currLevel += 1;
+      initLevel(levels[currLevel], true);
     }
   });
 };
@@ -71,13 +117,16 @@ var instructions = function(header, info, visibility) {
     $("#mouse-message-outer, #mouse-message-outer > .pretty").removeClass("hidden");
     $("#mouse-message-header").html(header);
     $("#mouse-message").html(info);
+    clearTimeout(mouseMessageStartTimeout);
     clearTimeout(mouseMessageFadeTimeout);
     mouseMessageFadeTimeout = setTimeout(function() {
-      hideMouseMessage();
+      instructions("", "", false);
     }, 5000);
   } else {
     $("#mouse-message-outer, #mouse-message-outer > .pretty").addClass("hidden");
-    setTimeout(function() {
+    clearTimeout(mouseMessageStartTimeout);
+    clearTimeout(mouseMessageFadeTimeout);
+    mouseMessageStartTimeout = setTimeout(function() {
       $("#mouse-message-header, #mouse-message").html("");
     }, 350);
   }
