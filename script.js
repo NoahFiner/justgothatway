@@ -2,7 +2,7 @@ var mx = 0; // mouse x
 var my = 0; // mouse y
 var wh = window.innerHeight;
 var ww = window.innerWidth;
-var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval;
+var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval, introCirclesInterval;
 var levelStarted = false;
 var currLevel = 0;
 var timeLeft = 0;
@@ -10,6 +10,28 @@ var drawX = 0;
 var drawY = 0;
 var timeLeft = 1;
 var timeAllowed = 1;
+
+//intro animation
+var introAnimation = function() {
+  $("#intro-title > span").removeClass("hidden");
+  setTimeout(function() {
+    $("#intro-subtitle").removeClass("hidden");
+  }, 1000);
+};
+
+var introCirclesInit = function() {
+  for(i = 0; i < 100; i++) {
+    $("#circle-background").append("<div class='circle disabled delay"+Math.floor(Math.random()*4)+"' id='circle"+i+"' style='top: "+(Math.random()*99-5)+"%; left: "+(Math.random()*99-5)+"%'></div>");
+  }
+  introCirclesInterval = setInterval(function() {introCircles()}, 500);
+};
+
+var introCircles = function() {
+  $(".circle").addClass("disabled");
+  for(i = 0; i < 4; i++) {
+    $("#circle"+Math.floor(Math.random()*100)).removeClass("disabled");
+  }
+};
 
 //shows the level. development only
 var hidePath = true;
@@ -155,8 +177,19 @@ var instructions = function(header, info, visibility) {
   }
 };
 
-$(document).ready(function() {
+var startGame = function() {
   initLevel(levels[currLevel], true);
+  $(".start").addClass("disabled");
+  clearTimeout(introCirclesInterval);
+  $("#intro-outer").fadeOut(500, function() {$("#intro-outer").remove();});
+  setTimeout(function() {
+    $(".start").removeClass("disabled");
+  }, 1000);
+};
+
+$(document).ready(function() {
+  introAnimation();
+  introCirclesInit();
   $(window).resize(function() {
     updateSizes();
   });

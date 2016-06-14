@@ -8,6 +8,12 @@ body {
   overflow: hidden;
 }
 
+.relative-full {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
 #everything-outer {
   height: 100vh;
   width: 100vw;
@@ -43,6 +49,37 @@ body {
   font-size: 20px;
 }
 
+.game-elem.start, .circle {
+  position: absolute;
+  background-color: rgba(200, 200, 200, 1);
+  z-index: 100;
+  transform: scale(1);
+  border-radius: 100%;
+  /*animation: entice 1s infinite;
+  -webkit-animation: entice 1s infinite;*/
+  transition: transform 0.25s;
+  -webkit-transition: transform 0.25s;
+}
+
+@keyframes entice {
+  0% {transform: scale(1);}
+  50% {transform: scale(1.05);}
+  100% {transform: scale(1);}
+}
+
+.start.disabled, .circle.disabled {
+  transform: scale(0);
+  animation: none;
+  -webkit-animation: none;
+}
+
+.circle {
+  height: 10vw;
+  width: 10vw;
+  z-index: -1;
+  background-color: rgba(250, 250, 250, 1);
+}
+
 .pretty {
   transform: none;
   opacity: 1;
@@ -50,14 +87,31 @@ body {
   -webkit-transition: transform 0.25s, opacity 0.25s;
 }
 
-.pretty.delay1 {
+.pretty-title {
+  transition: transform 1s, opacity 1s;
+  -webkit-transition: transform 1s, opacity 1s;
+}
+
+.delay1 {
   transition-delay: 0.1s;
   -webkit-transition-delay: 0.1s;
+}
+.delay2 {
+  transition-delay: 0.2s;
+  -webkit-transition-delay: 0.2s;
+}
+.delay3 {
+  transition-delay: 0.3s;
+  -webkit-transition-delay: 0.3s;
 }
 
 .pretty.hidden {
   transform: translateY(-20px);
   opacity: 0;
+}
+
+.pretty-title.hidden {
+  transform: translateY(-50px) !important;
 }
 
 
@@ -85,29 +139,6 @@ body {
   position: absolute;
   display: block;
   z-index: 1;
-}
-
-.game-elem.start {
-  background-color: rgba(200, 200, 200, 1);
-  z-index: 100;
-  transform: scale(1);
-  border-radius: 100%;
-  /*animation: entice 1s infinite;
-  -webkit-animation: entice 1s infinite;*/
-  transition: transform 0.25s;
-  -webkit-transition: transform 0.25s;
-}
-
-@keyframes entice {
-  0% {transform: scale(1);}
-  50% {transform: scale(1.05);}
-  100% {transform: scale(1);}
-}
-
-.start.disabled {
-  transform: scale(0);
-  animation: none;
-  -webkit-animation: none;
 }
 
 .game-elem.end {
@@ -171,4 +202,57 @@ body {
 
 #timer.hidden {
   opacity: 0;
+}
+
+#intro-outer {
+  z-index: 10000;
+  background-color: white;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+}
+
+#intro-title {
+  text-align: center;
+  font-size: 100px;
+  margin: 20px;
+}
+
+#intro-title > span {
+  display: inline-block;
+  position: relative;
+}
+
+#intro-subtitle {
+  font-size: 40px;
+  text-align: center;
+}
+
+#intro-info {
+  position: absolute;
+  left: 20px;
+  bottom: 40px;
+  font-size: 15px;
+  height: auto;
+  width: auto;
+  max-width: 300px;
+}
+
+#intro-button {
+  position: absolute;
+  right: 20px;
+  bottom: 40px;
+  font-size: 50px;
+  padding: 5px;
+  color: white;
+  cursor: pointer;
+  font-weight: 900;
+  transform: scale(1);
+  background-color: rgba(150, 150, 150, 1);
+  transition: transform 0.25s;
+  -webkit-transition: transform 0.25s;
+}
+
+#intro-button:hover {
+  transform: scale(1.1);
 }
