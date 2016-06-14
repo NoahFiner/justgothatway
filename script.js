@@ -2,12 +2,14 @@ var mx = 0; // mouse x
 var my = 0; // mouse y
 var wh = window.innerHeight;
 var ww = window.innerWidth;
-var mouseMessageFadeTimeout, mouseMessageStartTimeout;
+var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval;
 var levelStarted = false;
 var currLevel = 0;
 var timeLeft = 0;
 var drawX = 0;
 var drawY = 0;
+var timeLeft = 1;
+var timeAllowed = 1;
 
 //shows the level. development only
 var hidePath = true;
@@ -22,14 +24,24 @@ failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just h
 
 //t = time
 var levels = [
-  [['t', 10000], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10]],
-  [['t', 10000], ['s', 10, 10, 10], ['r', 80, 10], ['d', 50, 10], ['l', 40, 10], ['u', 20, 10], ['l', 30, 10], ['d', 20, 10], ['l', 20, 10], ['e', 10]],
-  [['t', 20000], ['s', 80, 10, 10], ['l', 50, 10], ['d', 30, 10], ['r', 40, 10], ['d', 30, 10], ['l', 60, 10], ['u', 30, 10], ['e', 10]],
+  [['t', 30], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10]],
+  [['t', 30], ['s', 10, 10, 10], ['r', 80, 10], ['d', 50, 10], ['l', 40, 10], ['u', 20, 10], ['l', 30, 10], ['d', 20, 10], ['l', 20, 10], ['e', 10]],
+  [['t', 30], ['s', 80, 10, 10], ['l', 50, 10], ['d', 30, 10], ['r', 40, 10], ['d', 30, 10], ['l', 60, 10], ['u', 30, 10], ['e', 10]],
 ];
 
 var updateSizes = function() {
   wh = window.innerHeight;
   ww = window.innerWidth;
+};
+
+var updateTimer = function() {
+  timeLeft--;
+  $("#timer-inner").css("width", timeLeft/timeAllowed*100 + "%");
+  setTimeout(function() {$("#timer").html(timeLeft);}, 500);
+  if(timeLeft <= 0) {
+    instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);
+    initLevel(levels[currLevel]);
+  }
 };
 
 var gameElemClasses = {l: "left", r: "right", u: "up", d: "down", s: "start", e: "end"};
@@ -38,7 +50,8 @@ var gameElemClasses = {l: "left", r: "right", u: "up", d: "down", s: "start", e:
 var createElem = function(a) {
   switch(a[0]) {
     case 't': //timer
-      timeLeft = a[1];
+      timeAllowed = a[1];
+      timeLeft = timeAllowed;
       break;
     case 's': //start
       $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+a[1]+"%; top: "+a[2]+"%; height: "+a[3]+"%; width: "+a[3]+"%'></div>");
@@ -72,6 +85,10 @@ var createElem = function(a) {
 
 var initLevel = function(level, wonParam) {
   var won = wonParam || 0;
+  clearTimeout(timerInterval);
+  timeLeft = timeAllowed;
+  $("#timer-inner").css("width", "0%");
+  $("#timer").addClass("hidden");
   $(".start").removeClass("disabled");
   levelStarted = false;
   if(wonParam) {
@@ -97,6 +114,12 @@ var startLevel = function() {
   $(".start").addClass("disabled");
   $(".game-elem").removeClass("hide-pointers");
   levelStarted = true;
+  $("#timer").removeClass("hidden");
+  $("#timer").html(timeAllowed);
+  $("#timer-inner").css("width", "100%");
+  timerInterval = setInterval(function() {
+    updateTimer();
+  }, 1000);
   $("#hover-lose").mouseenter(function() { //lose
     if(levelStarted) {
       instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);

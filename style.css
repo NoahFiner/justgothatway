@@ -142,3 +142,33 @@ body {
 .game-elem.hide-pointers:not(.start) {
   pointer-events: none !important;
 }
+
+#timer-outer {
+  position: absolute;
+  width: 100vw;
+  height: 30px;
+}
+
+#timer-inner {
+  float: left;
+  height: 30px;
+  background-color: rgba(225, 225, 225, 1);
+  width: 0%;
+  overflow: hidden;
+  transition: width 1s, background-color 0.25s;
+  -webkit-transition: width 1s, background-color 0.25s;
+}
+
+#timer {
+  float: right;
+  font-size: 25px;
+  margin-right: 10px;
+  color: white;
+  font-weight: 100;
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+
+#timer.hidden {
+  opacity: 0;
+}
