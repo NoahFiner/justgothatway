@@ -10,6 +10,7 @@ var drawX = 0;
 var drawY = 0;
 var timeLeft = 1;
 var timeAllowed = 1;
+var movingTiles = [];
 
 //intro animation
 var introAnimation = function() {
@@ -46,8 +47,8 @@ failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just h
 
 //t = time
 var levels = [
-  [['t', 30], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10]],
-  [['t', 30], ['s', 10, 10, 10], ['r', 80, 10], ['d', 50, 10], ['l', 40, 10], ['u', 20, 10], ['l', 30, 10], ['d', 20, 10], ['l', 20, 10], ['e', 10]],
+  [['t', 30], ['m', 20, 60, 70, 50, 4800, 10], ['m', 60, 20, 40, 20, 2300, 10], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10]],
+  [['t', 30], ['m', 80, 90, 70, 70, 500, 10], ['s', 10, 10, 10], ['r', 80, 10], ['d', 50, 10], ['l', 40, 10], ['u', 20, 10], ['l', 30, 10], ['d', 20, 10], ['l', 20, 10], ['e', 10]],
   [['t', 30], ['s', 80, 10, 10], ['l', 50, 10], ['d', 30, 10], ['r', 40, 10], ['d', 30, 10], ['l', 60, 10], ['u', 30, 10], ['e', 10]],
 ];
 
@@ -63,6 +64,38 @@ var updateTimer = function() {
   if(timeLeft <= 0) {
     instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);
     initLevel(levels[currLevel]);
+  }
+};
+
+var MovingTile = function(num, x1, y1, x2, y2, time, width) {
+  this.num = num;
+  this.coords = [[x1, y1], [x2, y2]];
+  this.time = time;
+  this.width = 10 || width;
+  this.state = true;
+  this.init = function() {
+    $("#game-outer").append("<div class='game-elem moving-tile disabled' id='mt"+this.num+"' style='left: "+this.coords[0][0]+"%; top: "+this.coords[0][1]+"%; height: "+this.width+"%; width: "+this.width+"%'></div>");
+    var that = this;
+    this.toggleState();
+    this.interval = setInterval(function() {
+      that.toggleState();
+    }, time);
+  };
+  this.toggleState = function() {
+    var coordState = 0;
+    if(this.state) {
+      this.state = false;
+      coordState = 1;
+    } else {
+      this.state = true;
+    }
+    $("#mt"+this.num).animate({
+                              left: this.coords[coordState][0]+"%",
+                              top: this.coords[coordState][1]+"%"}, time);
+  };
+  this.destroy = function() {
+    $("#mt"+this.num).remove();
+    clearInterval(this.interval);
   }
 };
 
@@ -99,6 +132,9 @@ var createElem = function(a) {
     case 'e': //end
       $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[1]+"%; width: "+a[1]+"%'></div>");
       break;
+    case 'm': //moving tile
+      movingTiles.push(new MovingTile(movingTiles.length, a[1], a[2], a[3], a[4], a[5], a[6]));
+      break;
     default: //old system
       $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='top: "+a[2]+"%; left: "+a[1]+"%; height: "+a[4]+"%; width: "+a[3]+"%'></div>");
       break;
@@ -114,9 +150,16 @@ var initLevel = function(level, wonParam) {
   $(".start").removeClass("disabled");
   levelStarted = false;
   if(wonParam) {
+    for(i = 0; i < movingTiles.length; i++) {
+      movingTiles[i].destroy();
+    }
+    movingTiles = [];
     $(".game-elem").remove();
     for(i = 0; i < level.length; i++) {
       createElem(level[i]);
+    }
+    for(i = 0; i < movingTiles.length; i++) {
+      movingTiles[i].init();
     }
     if(hidePath) {
       $(".game-elem").addClass("hidden");
@@ -124,6 +167,7 @@ var initLevel = function(level, wonParam) {
   }
   $(".game-elem").addClass("hide-pointers");
   $(".game-elem").focus();
+  $(".moving-tile").addClass("disabled");
   $(".start").mouseenter(function() {
     instructions("", "", false);
     if(levelStarted === false) {
@@ -134,6 +178,7 @@ var initLevel = function(level, wonParam) {
 
 var startLevel = function() {
   $(".start").addClass("disabled");
+  $(".moving-tile").removeClass('disabled');
   $(".game-elem").removeClass("hide-pointers");
   levelStarted = true;
   $("#timer").removeClass("hidden");
@@ -142,7 +187,8 @@ var startLevel = function() {
   timerInterval = setInterval(function() {
     updateTimer();
   }, 1000);
-  $("#hover-lose").mouseenter(function() { //lose
+  $("#hover-lose, .moving-tile").mouseenter(function() { //lose
+    //quick problem: if the user doesn't move the mouse they don't lose
     if(levelStarted) {
       instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);
       initLevel(levels[currLevel]);

@@ -67,7 +67,7 @@ body {
   100% {transform: scale(1);}
 }
 
-.start.disabled, .circle.disabled {
+.start.disabled, .circle.disabled, .moving-tile.disabled {
   transform: scale(0);
   animation: none;
   -webkit-animation: none;
@@ -166,8 +166,15 @@ body {
   cursor: s-resize !important;
 }
 
-.game-elem.hidden:not(.start) {
+.game-elem.hidden:not(.start):not(.moving-tile) {
   background-color: transparent !important;
+}
+
+.moving-tile {
+  background-color: rgba(100, 100, 100, 1);
+  transform: scale(1);
+  transition: transform 0.25s;
+  -webkit-transition: transform 0.25s;
 }
 
 .game-elem.hide-pointers:not(.start) {
