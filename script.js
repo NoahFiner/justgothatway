@@ -2,7 +2,7 @@ var mx = 0; // mouse x
 var my = 0; // mouse y
 var wh = window.innerHeight;
 var ww = window.innerWidth;
-var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval, introCirclesInterval;
+var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval, introCirclesInterval, scoreHideTimeout;
 var levelStarted = false;
 var currLevel = 0;
 var timeLeft = 0;
@@ -29,7 +29,7 @@ var introCirclesInit = function() {
   for(i = 0; i < 100; i++) {
     $("#circle-background").append("<div class='circle disabled delay"+Math.floor(Math.random()*4)+"' id='circle"+i+"' style='top: "+(Math.random()*99-5)+"%; left: "+(Math.random()*99-5)+"%'></div>");
   }
-  introCirclesInterval = setInterval(function() {introCircles()}, 500);
+  introCirclesInterval = setInterval(function() {introCircles();}, 500);
 };
 
 var introCircles = function() {
@@ -42,6 +42,9 @@ var introCircles = function() {
 //shows the level. development only
 var hidePath = true;
 
+//chooses most recent level. for testing new levels.
+var chooseMostRecentLevel = false;
+
 //success messages
 successHeaders = ["That was dank.", "You did it!", "Great work!", "Excellent work.", "That was surprisingly quick.", "You're good at just going that way."];
 successInfos = ["Great work back there!", "That was some top-notch work.", "I doubt you'll do better next time.", "Can you really beat that?", "It just gets harder from here.", "I doubt you can do better than that though.", "Your parents would be proud of you."];
@@ -52,9 +55,18 @@ failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just h
 
 //t = time
 var levels = [
-  [['t', 30], ['m', 20, 60, 70, 50, 4800, 10], ['m', 60, 20, 40, 20, 2300, 10], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10]],
-  [['t', 30], ['m', 80, 90, 70, 70, 500, 10], ['s', 10, 10, 10], ['r', 80, 10], ['d', 50, 10], ['l', 40, 10], ['u', 20, 10], ['l', 30, 10], ['d', 20, 10], ['l', 20, 10], ['e', 10]],
-  [['t', 30], ['s', 80, 10, 10], ['l', 50, 10], ['d', 30, 10], ['r', 40, 10], ['d', 30, 10], ['l', 60, 10], ['u', 30, 10], ['e', 10]],
+  [['t', 15], ['s', 10, 45, 10], ['r', 80, 10], ['e', 10]],
+  [['t', 15], ['s', 10, 80, 10], ['u', 50, 10], ['r', 50, 10], ['e', 10]],
+  [['t', 15], ['s', 40, 80, 10], ['u', 40, 10], ['r', 15, 10], ['d', 30, 10], ['e', 10]],
+  [['t', 15], ['s', 20, 80, 10], ['r', 40, 10], ['u', 20, 10], ['r', 20, 10], ['u', 20, 10], ['e', 10]],
+  [['t', 20], ['s', 10, 10, 10], ['r', 40, 10], ['d', 50, 10], ['l', 20, 10], ['u', 30, 10], ['l', 50, 10], ['e', 10]],
+  [['t', 10], ['m', 30, 20, 30, 60, 1000, 10], ['s', 80, 45, 10], ['l', 80, 10], ['e', 10]],
+  [['t', 15], ['m', 40, 0, 90, 50, 1000, 10], ['s', 10, 10, 10], ['r', 60, 10], ['d', 60, 10], ['e', 10]],
+  [['t', 25], ['m', 10, 70, 10, 0, 4000, 10], ['m', 40, 20, 0, 20, 4000, 10], ['s', 10, 80, 10], ['u', 70, 10], ['r', 30, 10], ['d', 10, 10], ['r', 30, 10], ['e', 10]],
+  [['t', 25], ['m', 20, 10, 110, 10, 2000, 10], ['s', 10, 10, 10], ['r', 30, 10], ['d', 10, 10], ['r', 10, 10], ['u', 20, 10], ['r', 30, 10], ['d', 10, 10], ['r', 10, 10], ['u', 20, 10], ['r', 20, 10], ['e', 10]]
+  // [['t', 30], ['m', 20, 60, 70, 50, 4800, 10], ['m', 60, 20, 40, 20, 2300, 10], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10]],
+  // [['t', 30], ['m', 80, 90, 70, 70, 500, 10], ['s', 10, 10, 10], ['r', 80, 10], ['d', 50, 10], ['l', 40, 10], ['u', 20, 10], ['l', 30, 10], ['d', 20, 10], ['l', 20, 10], ['e', 10]],
+  // [['t', 30], ['s', 80, 10, 10], ['l', 50, 10], ['d', 30, 10], ['r', 40, 10], ['d', 30, 10], ['l', 60, 10], ['u', 30, 10], ['e', 10]],
 ];
 
 var updateSizes = function() {
@@ -66,6 +78,10 @@ var updateTimer = function() {
   timeLeft--;
   $("#timer-inner").css("width", timeLeft/timeAllowed*100 + "%");
   setTimeout(function() {$("#timer").html(timeLeft);}, 500);
+  if(timeLeft <= 10) {
+    $("#everything-outer").addClass("flash");
+    setTimeout(function() {$("#everything-outer").removeClass("flash");}, 100);
+  }
   if(timeLeft <= 0) {
     instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);
     initLevel(levels[currLevel]);
@@ -80,7 +96,7 @@ var addBonus = function(points, desc) {
 };
 
 var resetBonuses = function() {
-  bonuses = []
+  bonuses = [];
   $("#score-outer > *:not(#score)").remove();
 };
 
@@ -113,7 +129,7 @@ var MovingTile = function(num, x1, y1, x2, y2, time, width) {
   this.destroy = function() {
     $("#mt"+this.num).remove();
     clearInterval(this.interval);
-  }
+  };
 };
 
 var gameElemClasses = {l: "left", r: "right", u: "up", d: "down", s: "start", e: "end"};
@@ -170,11 +186,13 @@ var initLevel = function(level, wonParam) {
     score += 250;
     for(i = 0; i < bonuses.length; i++) {
       score += bonuses[i][0];
-    };
-    $("#score").html("score <strong>"+score+"</strong>")
+    }
+    $("#score").html("score <strong>"+score+"</strong>");
+    clearTimeout(scoreHideTimeout);
     setTimeout(function() {
       $("#score-outer > *").removeClass("hidden");
-      setTimeout(function() {
+      clearTimeout(scoreHideTimeout);
+      scoreHideTimeout = setTimeout(function() {
         $("#score-outer > *:not(#score)").addClass("hidden");
         setTimeout(function() {
           resetBonuses();
@@ -240,17 +258,18 @@ var startLevel = function() {
         addBonus(25, "console bonus");
       }
       addBonus(timeLeft, "extra time");
+      addBonus(currLevel + 1, "level difficulty");
       if(perfectRound) {
         addBonus(75, "perfect round");
       }
       if(timeAllowed - timeLeft <= 5) {
-        addBonus(100, "below 5s");
+        addBonus(50, "below 5s");
       }
       if(timeAllowed - timeLeft > 5 && timeAllowed - timeLeft <= 10) {
-        addBonus(50, "below 10s");
+        addBonus(25, "below 10s");
       }
       if(timeAllowed - timeLeft > 10 && timeAllowed - timeLeft <= 15) {
-        addBonus(25, "sub 15s");
+        addBonus(10, "below 15s");
       }
       perfectRound = true;
       if(Math.random() < 0.005) {
@@ -265,12 +284,9 @@ var startLevel = function() {
       if(Math.random() < 0.1) {
         addBonus(0, "bad luck");
       }
-      if(currLevel % 10 === 0) {
-        addBonus(25, "level is divisible by 10");
-      }
-      for(i = 0; i < 4; i++) {
-        generatePityBonus();
-      }
+      // for(i = 0; i < 4; i++) {
+      //   generatePityBonus();
+      // }
 
 
       instructions(successHeaders[Math.floor(Math.random()*successHeaders.length)], successInfos[Math.floor(Math.random()*successInfos.length)], true);
@@ -301,6 +317,9 @@ var instructions = function(header, info, visibility) {
 };
 
 var startGame = function() {
+  if(chooseMostRecentLevel) {
+    currLevel = levels.length - 1;
+  }
   initLevel(levels[currLevel], true);
   $(".start").addClass("disabled");
   clearTimeout(introCirclesInterval);
