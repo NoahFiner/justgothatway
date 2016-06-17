@@ -11,6 +11,11 @@ var drawY = 0;
 var timeLeft = 1;
 var timeAllowed = 1;
 var movingTiles = [];
+var score = -250;
+var bonuses = [];
+var perfectRound = true;
+var consoleBonus = false;
+console.log("Why are you looking at the backend of the game? If you want, set consoleBonus to true for some free points.");
 
 //intro animation
 var introAnimation = function() {
@@ -65,6 +70,18 @@ var updateTimer = function() {
     instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);
     initLevel(levels[currLevel]);
   }
+};
+
+var addBonus = function(points, desc) {
+  if(bonuses.length < 5) {
+    bonuses.push([points, desc]);
+    $("#score-outer").append("<p class='pretty pretty-invert hidden delay"+bonuses.length+"'><strong>+"+points+"</strong> "+desc+"</p>");
+  }
+};
+
+var resetBonuses = function() {
+  bonuses = []
+  $("#score-outer > *:not(#score)").remove();
 };
 
 var MovingTile = function(num, x1, y1, x2, y2, time, width) {
@@ -150,6 +167,20 @@ var initLevel = function(level, wonParam) {
   $(".start").removeClass("disabled");
   levelStarted = false;
   if(wonParam) {
+    score += 250;
+    for(i = 0; i < bonuses.length; i++) {
+      score += bonuses[i][0];
+    };
+    $("#score").html("score <strong>"+score+"</strong>")
+    setTimeout(function() {
+      $("#score-outer > *").removeClass("hidden");
+      setTimeout(function() {
+        $("#score-outer > *:not(#score)").addClass("hidden");
+        setTimeout(function() {
+          resetBonuses();
+        }, 1000);
+      }, 5000);
+    }, 250);
     for(i = 0; i < movingTiles.length; i++) {
       movingTiles[i].destroy();
     }
@@ -176,12 +207,18 @@ var initLevel = function(level, wonParam) {
   });
 };
 
+var generatePityBonus = function() {
+  var pityDescs = ["freebie", "free points", "just because", "since you look good today", "to make you feel good", "so you feel proud", "meh", "here you go", "sure", "why not?", "quick, take this", "hot potato with points"];
+  addBonus(Math.ceil(Math.random()*5), pityDescs[Math.floor(Math.random()*pityDescs.length)]);
+};
+
 var startLevel = function() {
   $(".start").addClass("disabled");
   $(".moving-tile").removeClass('disabled');
   $(".game-elem").removeClass("hide-pointers");
   levelStarted = true;
   $("#timer").removeClass("hidden");
+  $("#score-outer > *").addClass("hidden");
   $("#timer").html(timeAllowed);
   $("#timer-inner").css("width", "100%");
   timerInterval = setInterval(function() {
@@ -190,12 +227,52 @@ var startLevel = function() {
   $("#hover-lose, .moving-tile").mouseenter(function() { //lose
     //quick problem: if the user doesn't move the mouse they don't lose
     if(levelStarted) {
+      perfectRound = false;
       instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);
       initLevel(levels[currLevel]);
     }
   });
   $(".end").mouseenter(function() {
     if(levelStarted) {
+
+      //bonuses
+      if(consoleBonus) {
+        addBonus(25, "console bonus");
+      }
+      addBonus(timeLeft, "extra time");
+      if(perfectRound) {
+        addBonus(75, "perfect round");
+      }
+      if(timeAllowed - timeLeft <= 5) {
+        addBonus(100, "below 5s");
+      }
+      if(timeAllowed - timeLeft > 5 && timeAllowed - timeLeft <= 10) {
+        addBonus(50, "below 10s");
+      }
+      if(timeAllowed - timeLeft > 10 && timeAllowed - timeLeft <= 15) {
+        addBonus(25, "sub 15s");
+      }
+      perfectRound = true;
+      if(Math.random() < 0.005) {
+        addBonus(20000, "ridiculous luck, GG");
+      }
+      if(Math.random() < 0.025) {
+        addBonus(2000, "crazy luck");
+      }
+      if(Math.random() < 0.1) {
+        addBonus(100, "luck");
+      }
+      if(Math.random() < 0.1) {
+        addBonus(0, "bad luck");
+      }
+      if(currLevel % 10 === 0) {
+        addBonus(25, "level is divisible by 10");
+      }
+      for(i = 0; i < 4; i++) {
+        generatePityBonus();
+      }
+
+
       instructions(successHeaders[Math.floor(Math.random()*successHeaders.length)], successInfos[Math.floor(Math.random()*successInfos.length)], true);
       currLevel += 1;
       initLevel(levels[currLevel], true);
