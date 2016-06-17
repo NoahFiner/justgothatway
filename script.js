@@ -15,14 +15,51 @@ var score = -250;
 var bonuses = [];
 var perfectRound = true;
 var consoleBonus = false;
+var errorBool = false;
 console.log("Why are you looking at the backend of the game? If you want, set consoleBonus to true for some free points.");
+
+function mobileCheck() {
+ if (navigator.userAgent.match(/Android/i)
+ || navigator.userAgent.match(/webOS/i)
+ || navigator.userAgent.match(/iPhone/i)
+ || navigator.userAgent.match(/iPad/i)
+ || navigator.userAgent.match(/iPod/i)
+ || navigator.userAgent.match(/BlackBerry/i)
+ || navigator.userAgent.match(/Windows Phone/i)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+var errorMessage = function(msg, desc) {
+  errorBool = true;
+  $("#message-outer").removeClass("hidden");
+  $(".intro-title").html("<span class='pretty pretty-title hidden'>"+msg+"</span>");
+  $(".intro-subtitle").html(desc);
+};
+
+var undoErrorMessage = function() {
+  errorBool = false;
+  $("#message-outer").addClass("hidden");
+  $(".intro-title").addClass("hidden");
+  $(".intro-subtitle").addClass("hidden");
+};
 
 //intro animation
 var introAnimation = function() {
-  $("#intro-title > span").removeClass("hidden");
+  $(".intro-title > span").removeClass("hidden");
   setTimeout(function() {
-    $("#intro-subtitle").removeClass("hidden");
+    $(".intro-subtitle").removeClass("hidden");
   }, 1000);
+  if(errorBool === false) {
+    setTimeout(function() {
+      $("#intro-info").removeClass("hidden");
+    }, 1500);
+    setTimeout(function() {
+      $("#intro-button").removeClass("hidden");
+    }, 2000);
+  }
 };
 
 var introCirclesInit = function() {
@@ -39,19 +76,19 @@ var introCircles = function() {
   }
 };
 
+//success messages
+successHeaders = ["Good job.", "You did it!", "Great work!", "Excellent work.", "That was surprisingly quick.", "You're good at just going that way."];
+successInfos = ["That wasn't supposed to be hard, though.", "That should have been easier, though.", "Like you'll do better next time.", "The next level is much harder.", "It just gets harder from here.", "Even though that was meant to be easy.", "Your parents would be proud of you.", "It really took that long to win, though?"];
+
+//failure messages
+failureHeaders = ["Whoops", "Nope", "Really?", "Come on", "Wow", "Seriously?", "That's not the way", "Nah"];
+failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just had to go that way.", "You should have gone that way.", "Why didn't you just go that way?", "All you had to do was go that way.", "All you had to do was go that way.", "Did you really not go that way?", "You need to go that way next time."];
+
 //shows the level. development only
 var hidePath = true;
 
 //chooses most recent level. for testing new levels.
 var chooseMostRecentLevel = false;
-
-//success messages
-successHeaders = ["That was dank.", "You did it!", "Great work!", "Excellent work.", "That was surprisingly quick.", "You're good at just going that way."];
-successInfos = ["Great work back there!", "That was some top-notch work.", "I doubt you'll do better next time.", "Can you really beat that?", "It just gets harder from here.", "I doubt you can do better than that though.", "Your parents would be proud of you."];
-
-//failure messages
-failureHeaders = ["Yikes!", "Whoops", "Nope", "Really?", "Come on", "Wow", "It was that way!", "That was it?", "Ugh..."];
-failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just had to go that way.", "You should have gone that way, seriously.", "Why didn't you just go that way?", "All you had to do was go that way.", "If you had just gone that way, maybe things would have turned out better.", "How could someone not just go that way?", "Was it that hard to just go that way?"];
 
 //t = time
 var levels = [
@@ -60,11 +97,11 @@ var levels = [
   [['t', 15], ['s', 40, 80, 10], ['u', 40, 10], ['r', 15, 10], ['d', 30, 10], ['e', 10]],
   [['t', 15], ['s', 20, 80, 10], ['r', 40, 10], ['u', 20, 10], ['r', 20, 10], ['u', 20, 10], ['e', 10]],
   [['t', 20], ['s', 10, 10, 10], ['r', 40, 10], ['d', 50, 10], ['l', 20, 10], ['u', 30, 10], ['l', 50, 10], ['e', 10]],
-  [['t', 10], ['m', 30, 20, 30, 60, 1000, 10], ['s', 80, 45, 10], ['l', 80, 10], ['e', 10]],
-  [['t', 15], ['m', 40, 0, 90, 50, 1000, 10], ['s', 10, 10, 10], ['r', 60, 10], ['d', 60, 10], ['e', 10]],
-  [['t', 25], ['m', 10, 70, 10, 0, 4000, 10], ['m', 40, 20, 0, 20, 4000, 10], ['s', 10, 80, 10], ['u', 70, 10], ['r', 30, 10], ['d', 10, 10], ['r', 30, 10], ['e', 10]],
-  [['t', 25], ['m', 20, 10, 110, 10, 2000, 10], ['s', 10, 10, 10], ['r', 30, 10], ['d', 10, 10], ['r', 10, 10], ['u', 20, 10], ['r', 30, 10], ['d', 10, 10], ['r', 10, 10], ['u', 20, 10], ['r', 20, 10], ['e', 10]]
-  // [['t', 30], ['m', 20, 60, 70, 50, 4800, 10], ['m', 60, 20, 40, 20, 2300, 10], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10]],
+  [['t', 30], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10]],
+  [['t', 15], ['s', 80, 45, 10], ['l', 80, 10], ['e', 10], ['m', 30, 20, 30, 60, 1000, 10]],
+  [['t', 15], ['s', 10, 10, 10], ['r', 60, 10], ['d', 60, 10], ['e', 10], ['m', 40, 0, 90, 50, 1000, 10]],
+  [['t', 25], ['s', 10, 80, 10], ['u', 70, 10], ['r', 30, 10], ['d', 10, 10], ['r', 30, 10], ['e', 10], ['m', 10, 70, 10, 0, 4000, 10], ['m', 40, 20, 0, 20, 4000, 10]],
+  [['t', 25], ['s', 0, 10, 10], ['r', 30, 10], ['d', 10, 10], ['r', 10, 10], ['u', 20, 10], ['r', 20, 10], ['d', 10, 10], ['r', 10, 10], ['u', 20, 10], ['r', 20, 10], ['e', 10], ['m', 10, 10, 100, 10, 2000, 10]]
   // [['t', 30], ['m', 80, 90, 70, 70, 500, 10], ['s', 10, 10, 10], ['r', 80, 10], ['d', 50, 10], ['l', 40, 10], ['u', 20, 10], ['l', 30, 10], ['d', 20, 10], ['l', 20, 10], ['e', 10]],
   // [['t', 30], ['s', 80, 10, 10], ['l', 50, 10], ['d', 30, 10], ['r', 40, 10], ['d', 30, 10], ['l', 60, 10], ['u', 30, 10], ['e', 10]],
 ];
@@ -72,6 +109,11 @@ var levels = [
 var updateSizes = function() {
   wh = window.innerHeight;
   ww = window.innerWidth;
+  if(wh > ww) {
+    $("#game-outer, #hover-lose").addClass("vertical");
+  } else {
+    $("#game-outer, #hover-lose").removeClass("vertical");
+  }
 };
 
 var updateTimer = function() {
@@ -263,13 +305,13 @@ var startLevel = function() {
         addBonus(75, "perfect round");
       }
       if(timeAllowed - timeLeft <= 5) {
-        addBonus(50, "below 5s");
+        addBonus(50, "under 5s");
       }
       if(timeAllowed - timeLeft > 5 && timeAllowed - timeLeft <= 10) {
-        addBonus(25, "below 10s");
+        addBonus(25, "under 10s");
       }
       if(timeAllowed - timeLeft > 10 && timeAllowed - timeLeft <= 15) {
-        addBonus(10, "below 15s");
+        addBonus(10, "under 15s");
       }
       perfectRound = true;
       if(Math.random() < 0.005) {
@@ -330,8 +372,12 @@ var startGame = function() {
 };
 
 $(document).ready(function() {
+  if(mobileCheck()) {
+    errorMessage("This game doesn't work on mobile.", "Just go that way uses CSS3 cursors which, obviously, aren't available on touchscreens.");
+  }
   introAnimation();
   introCirclesInit();
+  updateSizes();
   $(window).resize(function() {
     updateSizes();
   });

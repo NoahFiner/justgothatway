@@ -23,7 +23,7 @@ body {
 }
 
 #everything-outer.flash {
-  background-color: rgba(220, 220, 220, 1);
+  background-color: rgba(240, 240, 240, 1);
   transition: background-color 1ms;
 }
 
@@ -123,6 +123,7 @@ body {
 .pretty.hidden {
   transform: translateY(-20px);
   opacity: 0;
+  pointer-events: none;
 }
 
 .pretty-title.hidden {
@@ -131,6 +132,10 @@ body {
 
 .pretty-invert.hidden {
   transform: translateY(20px) !important;
+}
+
+.pretty-invert-intro.hidden {
+  transform: translateY(50px) !important;
 }
 
 
@@ -151,6 +156,11 @@ body {
   position: absolute;
   height: 100vh;
   width: 100vh;
+}
+
+.vertical {
+  height: 100vw !important;
+  width: 100vw !important;
 }
 
 .game-elem {
@@ -230,27 +240,34 @@ body {
   opacity: 0;
 }
 
-#intro-outer {
+#intro-outer, #message-outer {
   z-index: 10000;
   background-color: white;
   width: 100vw;
   height: 100vh;
   position: absolute;
+  opacity: 1;
+  pointer-events: auto;
 }
 
-#intro-title {
+#message-outer.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-title {
   text-align: center;
-  font-size: 100px;
+  font-size: 8vw;
   margin: 20px;
 }
 
-#intro-title > span {
+.intro-title > span {
   display: inline-block;
   position: relative;
 }
 
-#intro-subtitle {
-  font-size: 40px;
+.intro-subtitle {
+  font-size: 4vw;
   text-align: center;
 }
 
