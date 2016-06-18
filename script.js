@@ -16,7 +16,6 @@ var bonuses = [];
 var perfectRound = true;
 var consoleBonus = false;
 var errorBool = false;
-console.log("Why are you looking at the backend of the game? If you want, set consoleBonus to true for some free points.");
 
 function mobileCheck() {
  if (navigator.userAgent.match(/Android/i)
@@ -85,10 +84,10 @@ failureHeaders = ["Whoops", "Nope", "Really?", "Come on", "Wow", "Seriously?", "
 failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just had to go that way.", "You should have gone that way.", "Why didn't you just go that way?", "All you had to do was go that way.", "All you had to do was go that way.", "Did you really not go that way?", "You need to go that way next time."];
 
 //shows the level. development only
-var hidePath = true;
+var hidePath = false;
 
 //chooses most recent level. for testing new levels.
-var chooseMostRecentLevel = false;
+var chooseMostRecentLevel = true;
 
 //t = time
 var levels = [
@@ -101,7 +100,17 @@ var levels = [
   [['t', 15], ['s', 80, 45, 10], ['l', 80, 10], ['e', 10], ['m', 30, 20, 30, 60, 1000, 10]],
   [['t', 15], ['s', 10, 10, 10], ['r', 60, 10], ['d', 60, 10], ['e', 10], ['m', 40, 0, 90, 50, 1000, 10]],
   [['t', 25], ['s', 10, 80, 10], ['u', 70, 10], ['r', 30, 10], ['d', 10, 10], ['r', 30, 10], ['e', 10], ['m', 10, 70, 10, 0, 4000, 10], ['m', 40, 20, 0, 20, 4000, 10]],
-  [['t', 25], ['s', 0, 10, 10], ['r', 30, 10], ['d', 10, 10], ['r', 10, 10], ['u', 20, 10], ['r', 20, 10], ['d', 10, 10], ['r', 10, 10], ['u', 20, 10], ['r', 20, 10], ['e', 10], ['m', 10, 10, 100, 10, 2000, 10]]
+  [['t', 25], ['s', 0, 10, 10], ['r', 30, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['r', 15, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['r', 20, 10], ['e', 10], ['m', 10, 10, 100, 10, 2000, 10]],
+  [['t', 30], ['s', 0, 45, 10], ['r', 15, 10], ['d', 15, 10], ['r', 15, 10], ['u', 25, 10], ['r', 15, 10], ['d', 15, 10], ['r', 15, 10], ['u', 25, 10], ['r', 15, 10], ['d', 15, 10], ['r', 15, 10], ['u', 25, 10], ['e', 10], ['m', 10, 45, 90, 45, 2500, 10], ['m', 90, 60, 10, 60, 3000, 10]],
+  [['t', 25], ['s', 10, 45, 10], ['l', 20, 10], ['d', 20, 10], ['r', 70, 10], ['u', 20, 10], ['r', 12, 10], ['d', 10, 10], ['e', 10], ['m', 30, 50, 30, 90, 2000, 10], ['m', 40, 50, 40, 90, 3000, 10], ['m', 50, 50, 50, 90, 2500, 10]],
+  [['t', 30], ['s', 10, 40, 10], ['d', 10, 10], ['r', 50, 10], ['d', 15, 10], ['l', 50, 10], ['d', 15, 10], ['r', 65, 10], ['u', 60, 10], ['e', 10], ['m', 0, 50, 90, 50, 2000, 10], ['m', 0, 65, 90, 65, 2500, 10], ['m', 0, 80, 90, 80, 2750]],
+  [['t', 30], ['s', 0, 0, 10], ['d', 15, 10], ['r', 15, 10], ['d', 15, 10], ['r', 15, 10], ['d', 15, 10], ['r', 15, 10], ['d', 15, 10], ['r', 15, 10], ['d', 15, 10], ['r', 15, 10], ['d', 15, 10], ['r', 15, 10], ['m', 5, 5, 75, 75, 3000, 10], ['e', 10]],
+  [['t', 15], ['s', 10, 10, 10], ['d', 50, 10], ['r', 10, 10], ['d', 20, 10], ['e', 10], ['m', 10, 20, 10, 90, 2000, 10], ['m', 0, 60, 60, 60, 2250, 10]],
+  [['t', 15], ['s', 90, 80, 10], ['l', 80, 10], ['u', 30, 10], ['r', 60, 10], ['e', 10], ['m', 90, 90, 20, 40, 2000, 10], ['m', 90, 40, 20, 90, 2000, 10]],
+  [['t', 40], ['s', 10, 10, 10], ['d', 80, 10], ['r', 20, 10], ['u', 90, 10], ['r', 20, 10], ['d', 80, 10], ['r', 20, 10], ['u', 90, 10], ['r', 20, 10], ['d', 80, 10], ['e', 10], ['m', 10, 30, 90, 70, 3000, 10], ['m', 90, 30, 10, 70, 3000, 10], ['m', 90, 45, 10, 45, 1376, 10]],
+  [['t', 15], ['s', 0, 45, 10], ['r', 90, 10], ['e', 10], ['m', 10, 60, 30, 30, 2000, 10], ['m', 50, 60, 30, 30, 2000, 10], ['m', 50, 60, 70, 30, 2000, 10], ['m', 90, 60, 70, 30, 2000, 10]],
+  [['t', 5], ['s', 10, 45, 10], ['r', 80, 10], ['e', 10], ['m', 30, 30, 30, 60, 500, 10], ['m', 60, 60, 60, 30, 400, 10]],
+  [['t', 15], ['s', 45, 0, 10], ['d', 90, 10], ['e', 10], ['m', 70, 0, 30, 40, 2000, 10], ['m', 70, 20, 30, 60, 1750, 10], ['m', 70, 40, 30, 80, 1500, 10]]
   // [['t', 30], ['m', 80, 90, 70, 70, 500, 10], ['s', 10, 10, 10], ['r', 80, 10], ['d', 50, 10], ['l', 40, 10], ['u', 20, 10], ['l', 30, 10], ['d', 20, 10], ['l', 20, 10], ['e', 10]],
   // [['t', 30], ['s', 80, 10, 10], ['l', 50, 10], ['d', 30, 10], ['r', 40, 10], ['d', 30, 10], ['l', 60, 10], ['u', 30, 10], ['e', 10]],
 ];
@@ -296,36 +305,24 @@ var startLevel = function() {
     if(levelStarted) {
 
       //bonuses
-      if(consoleBonus) {
-        addBonus(25, "console bonus");
-      }
       addBonus(timeLeft, "extra time");
       addBonus(currLevel + 1, "level difficulty");
       if(perfectRound) {
-        addBonus(75, "perfect round");
+        addBonus(25, "perfect round");
       }
       if(timeAllowed - timeLeft <= 5) {
-        addBonus(50, "under 5s");
+        addBonus(25, "under 5s");
       }
       if(timeAllowed - timeLeft > 5 && timeAllowed - timeLeft <= 10) {
-        addBonus(25, "under 10s");
+        addBonus(15, "under 10s");
       }
       if(timeAllowed - timeLeft > 10 && timeAllowed - timeLeft <= 15) {
-        addBonus(10, "under 15s");
+        addBonus(5, "under 15s");
+      }
+      if(timeLeft <= 2) {
+        addBonus(25, "barely made it");
       }
       perfectRound = true;
-      if(Math.random() < 0.005) {
-        addBonus(20000, "ridiculous luck, GG");
-      }
-      if(Math.random() < 0.025) {
-        addBonus(2000, "crazy luck");
-      }
-      if(Math.random() < 0.1) {
-        addBonus(100, "luck");
-      }
-      if(Math.random() < 0.1) {
-        addBonus(0, "bad luck");
-      }
       // for(i = 0; i < 4; i++) {
       //   generatePityBonus();
       // }
