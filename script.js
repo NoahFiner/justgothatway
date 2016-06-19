@@ -16,6 +16,9 @@ var bonuses = [];
 var perfectRound = true;
 var consoleBonus = false;
 var errorBool = false;
+var gameActive = false;
+var totalDeaths = 0;
+var origTime, endTime;
 
 function mobileCheck() {
  if (navigator.userAgent.match(/Android/i)
@@ -30,6 +33,30 @@ function mobileCheck() {
     return false;
   }
 }
+
+var finish = function() {
+  instructions("", "", false);
+  $("#final-score").html("Final score: <strong>"+score+"</strong>");
+  $("#end-outer").removeClass("hidden");
+  $("#win-title > span").removeClass("hidden");
+  for(i = 0; i < 25; i++) {
+    $("#fireworks-background").append("<div class='firework inactive' style='left: "+(Math.random()*75 + 12.5)+"%; top: "+(Math.random()*75 + 10)+"%; transform: rotate("+(Math.random()*720-360)+"deg);'></div>");
+  }
+  setTimeout(function() {
+    $(".intro-title, .intro-subtitle").removeClass("hidden");
+    $(".firework").removeClass("inactive");
+  }, 500);
+  setTimeout(function() {
+    $(".firework").fadeOut(500, function() {$(this).remove();});
+    $("#menu-button").removeClass("hidden");
+    $("#deaths").html("<strong>"+totalDeaths+"</strong> deaths");
+    $("#levels").html("<strong>"+currLevel+"</strong> levels");
+    var time = new Date();
+    $("#seconds").html("<strong>"+Math.round((time.getTime()-origTime)/1000)+"</strong> seconds");
+    $("#stats > li, #stats").removeClass("hidden");
+  }, 3500);
+  clearTimeout(timerInterval);
+};
 
 var errorMessage = function(msg, desc) {
   errorBool = true;
@@ -47,7 +74,11 @@ var undoErrorMessage = function() {
 
 //intro animation
 var introAnimation = function() {
-  $(".intro-title > span").removeClass("hidden");
+  $("#intro-outer").removeClass("hidden");
+  $("#menu-button, #end-outer, #final-score").addClass("hidden");
+  currLevel = 0;
+  totalDeaths = 0;
+  $(".intro-title:not(#win-title) > span").removeClass("hidden");
   setTimeout(function() {
     $(".intro-subtitle").removeClass("hidden");
   }, 1000);
@@ -108,7 +139,7 @@ var levels = [
   [['t', 15], ['s', 10, 10, 10], ['d', 50, 10], ['r', 10, 10], ['d', 20, 10], ['e', 10], ['m', 10, 20, 10, 90, 2000, 10], ['m', 0, 60, 60, 60, 2250, 10]],
   [['t', 15], ['s', 90, 80, 10], ['l', 80, 10], ['u', 30, 10], ['r', 60, 10], ['e', 10], ['m', 90, 90, 20, 40, 2000, 10], ['m', 90, 40, 20, 90, 2000, 10]],
   [['t', 40], ['s', 10, 10, 10], ['d', 80, 10], ['r', 20, 10], ['u', 90, 10], ['r', 20, 10], ['d', 80, 10], ['r', 20, 10], ['u', 90, 10], ['r', 20, 10], ['d', 80, 10], ['e', 10], ['m', 10, 30, 90, 70, 3000, 10], ['m', 90, 30, 10, 70, 3000, 10], ['m', 90, 45, 10, 45, 1376, 10]],
-  [['t', 15], ['s', 0, 45, 10], ['r', 90, 10], ['e', 10], ['m', 10, 60, 30, 30, 2000, 10], ['m', 50, 60, 30, 30, 2000, 10], ['m', 50, 60, 70, 30, 2000, 10], ['m', 90, 60, 70, 30, 2000, 10]],
+  [['t', 15], ['s', 0, 45, 10], ['r', 90, 10], ['e', 10], ['m', 10, 60, 30, 30, 2000, 10], ['m', 50, 60, 30, 30, 4000, 10], ['m', 50, 60, 70, 30, 4000, 10], ['m', 90, 60, 70, 30, 4000, 10]],
   [['t', 5], ['s', 10, 45, 10], ['r', 80, 10], ['e', 10], ['m', 30, 30, 30, 60, 500, 10], ['m', 60, 60, 60, 30, 400, 10]],
   [['t', 15], ['s', 45, 0, 10], ['d', 90, 10], ['e', 10], ['m', 70, 0, 30, 40, 2000, 10], ['m', 70, 20, 30, 60, 1750, 10], ['m', 70, 40, 30, 80, 1500, 10]],
   [['t', 15], ['s', 10, 10, 10], ['d', 80, 10], ['r', 15, 10], ['u', 80, 10], ['r', 15, 10], ['d', 50, 10], ['r', 20, 10], ['u', 30, 10], ['e', 10]],
@@ -263,14 +294,18 @@ var initLevel = function(level, wonParam) {
     }
     movingTiles = [];
     $(".game-elem").remove();
-    for(i = 0; i < level.length; i++) {
-      createElem(level[i]);
-    }
-    for(i = 0; i < movingTiles.length; i++) {
-      movingTiles[i].init();
-    }
-    if(hidePath) {
-      $(".game-elem").addClass("hidden");
+    if(currLevel >= levels.length) {
+      setTimeout(function() {finish();}, 2500);
+    } else {
+      for(i = 0; i < level.length; i++) {
+        createElem(level[i]);
+      }
+      for(i = 0; i < movingTiles.length; i++) {
+        movingTiles[i].init();
+      }
+      if(hidePath) {
+        $(".game-elem").addClass("hidden");
+      }
     }
   }
   $(".game-elem").addClass("hide-pointers");
@@ -278,7 +313,7 @@ var initLevel = function(level, wonParam) {
   $(".moving-tile").addClass("disabled");
   $(".start").mouseenter(function() {
     instructions("", "", false);
-    if(levelStarted === false) {
+    if(levelStarted === false && gameActive) {
       startLevel();
     }
   });
@@ -305,6 +340,7 @@ var startLevel = function() {
     //quick problem: if the user doesn't move the mouse they don't lose
     if(levelStarted) {
       perfectRound = false;
+      totalDeaths++;
       instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);
       initLevel(levels[currLevel]);
     }
@@ -364,15 +400,19 @@ var instructions = function(header, info, visibility) {
 };
 
 var startGame = function() {
+  gameActive = true;
+  var time = new Date();
+  origTime = time.getTime();
   if(chooseMostRecentLevel) {
     currLevel = levels.length - 1;
   }
   initLevel(levels[currLevel], true);
   $(".start").addClass("disabled");
   clearTimeout(introCirclesInterval);
-  $("#intro-outer").fadeOut(500, function() {$("#intro-outer").remove();});
+  $("#intro-outer").addClass("hidden");
   setTimeout(function() {
     $(".start").removeClass("disabled");
+    $(".intro-title > span, .intro-subtitle, #intro-info, #intro-button, #stats > li, #stats").addClass("hidden");
   }, 1000);
 };
 

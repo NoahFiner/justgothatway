@@ -11,6 +11,18 @@
 </head>
 <body>
   <div id="everything-outer">
+    <div id="end-outer" class="hidden">
+      <div id="fireworks-background"></div>
+      <div class="relative-full">
+        <h1 id="win-title" class="intro-title"><span class="pretty pretty-title hidden">You won!</span></h1>
+        <p id="final-score" class="intro-subtitle delay5 pretty pretty-title hidden">Final score: <strong></strong></p>
+        <p id="menu-button" class="button pretty pretty-invert-intro hidden" onclick="introAnimation(); introCirclesInit();">main menu</p>
+        <ul id="stats" class="pretty hidden">It took you
+          <li id="seconds" class="pretty delay1 hidden"><strong>4</strong> seconds</li>
+          <li id="deaths" class="pretty delay2 hidden"><strong>4</strong> deaths</li>
+          <li id="levels" class="pretty delay3 hidden"><strong>4</strong> levels</li>
+      </div>
+    </div>
     <div id="message-outer" class="hidden">
       <div class="relative-full">
         <h1 class="intro-title"><span class="pretty pretty-title hidden">This game doesn't work on mobile.</span></h1>
@@ -27,7 +39,7 @@
         </h1>
         <p class="intro-subtitle pretty pretty-title hidden">It shouldn't be that hard.</p>
         <p id="intro-info" class="pretty pretty-invert-intro hidden">This game uses CSS3 cursors and does not work on mobile and older browsers.<br><br>If your cursor isn't an arrow when hovering over <strong style="cursor: e-resize">here</strong>, you can't play.</p>
-        <p id="intro-button" class="pretty pretty-invert-intro hidden" onclick="startGame()">start</p>
+        <p id="intro-button" class="button pretty pretty-invert-intro hidden" onclick="startGame()">start</p>
       </div>
       <div id="circle-background">
       </div>
