@@ -18,6 +18,7 @@ var consoleBonus = false;
 var errorBool = false;
 var gameActive = false;
 var totalDeaths = 0;
+var bonusCount = 0;
 var origTime, endTime;
 
 function mobileCheck() {
@@ -51,6 +52,7 @@ var finish = function() {
     $("#menu-button").removeClass("hidden");
     $("#deaths").html("<strong>"+totalDeaths+"</strong> deaths");
     $("#levels").html("<strong>"+currLevel+"</strong> levels");
+    $("#bonuses").html("<strong>"+bonusCount+"</strong> bonuses");
     var time = new Date();
     $("#seconds").html("<strong>"+Math.round((time.getTime()-origTime)/1000)+"</strong> seconds");
     $("#stats > li, #stats").removeClass("hidden");
@@ -78,6 +80,8 @@ var introAnimation = function() {
   $("#menu-button, #end-outer, #final-score").addClass("hidden");
   currLevel = 0;
   totalDeaths = 0;
+  bonusCount = 0;
+  score = -250;
   $(".intro-title:not(#win-title) > span").removeClass("hidden");
   setTimeout(function() {
     $(".intro-subtitle").removeClass("hidden");
@@ -118,7 +122,7 @@ failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just h
 var hidePath = true;
 
 //chooses most recent level. for testing new levels.
-var chooseMostRecentLevel = false;
+var chooseMostRecentLevel = true;
 
 //t = time
 var levels = [
@@ -180,6 +184,7 @@ var updateTimer = function() {
 
 var addBonus = function(points, desc) {
   if(bonuses.length < 5) {
+    bonusCount++;
     bonuses.push([points, desc]);
     $("#score-outer").append("<p class='pretty pretty-invert hidden delay"+bonuses.length+"'><strong>+"+points+"</strong> "+desc+"</p>");
   }
