@@ -84,7 +84,7 @@ failureHeaders = ["Whoops", "Nope", "Really?", "Come on", "Wow", "Seriously?", "
 failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just had to go that way.", "You should have gone that way.", "Why didn't you just go that way?", "All you had to do was go that way.", "All you had to do was go that way.", "Did you really not go that way?", "You need to go that way next time."];
 
 //shows the level. development only
-var hidePath = false;
+var hidePath = true;
 
 //chooses most recent level. for testing new levels.
 var chooseMostRecentLevel = false;
