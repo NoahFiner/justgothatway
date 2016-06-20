@@ -122,7 +122,7 @@ failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just h
 var hidePath = true;
 
 //chooses most recent level. for testing new levels.
-var chooseMostRecentLevel = true;
+var chooseMostRecentLevel = false;
 
 //t = time
 var levels = [
