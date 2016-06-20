@@ -22,13 +22,13 @@ var bonusCount = 0;
 var origTime, endTime;
 
 function mobileCheck() {
- if (navigator.userAgent.match(/Android/i)
- || navigator.userAgent.match(/webOS/i)
- || navigator.userAgent.match(/iPhone/i)
- || navigator.userAgent.match(/iPad/i)
- || navigator.userAgent.match(/iPod/i)
- || navigator.userAgent.match(/BlackBerry/i)
- || navigator.userAgent.match(/Windows Phone/i)) {
+ if (navigator.userAgent.match(/Android/i) ||
+     navigator.userAgent.match(/webOS/i) ||
+     navigator.userAgent.match(/iPhone/i) ||
+     navigator.userAgent.match(/iPad/i) ||
+     navigator.userAgent.match(/iPod/i) ||
+     navigator.userAgent.match(/BlackBerry/i) ||
+navigator.userAgent.match(/Windows Phone/i)) {
     return true;
   } else {
     return false;
@@ -119,10 +119,10 @@ failureHeaders = ["Whoops", "Nope", "Really?", "Come on", "Wow", "Seriously?", "
 failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just had to go that way.", "You should have gone that way.", "Why didn't you just go that way?", "All you had to do was go that way.", "All you had to do was go that way.", "Did you really not go that way?", "You need to go that way next time."];
 
 //shows the level. development only
-var hidePath = true;
+var hidePath = false;
 
 //chooses most recent level. for testing new levels.
-var chooseMostRecentLevel = false;
+var chooseMostRecentLevel = true;
 
 //t = time
 var levels = [
@@ -157,6 +157,15 @@ var levels = [
   [['t', 25], ['s', 0, 10, 10], ['r', 30, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['r', 15, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['r', 20, 10], ['e', 10], ['m', 10, 10, 100, 10, 2000, 10], ['m', 10, 20, 100, 20, 3333, 10]],
   [['t', 5], ['s', 0, 45, 10], ['r', 50, 10], ['d', 10, 10], ['r', 10, 10], ['e', 10], ['m', 20, 30, 20, 70, 750, 10], ['m', 30, 30, 30, 70, 666, 10]]
 ];
+
+var overlap = function(elem1, elem2) {
+  p1 = elem1[0].getBoundingClientRect();
+  p2 = elem2[0].getBoundingClientRect();
+  return !(p1.right < p2.left ||
+           p1.left > p2.right ||
+           p1.bottom < p2.top ||
+           p1.top > p2.bottom);
+};
 
 var updateSizes = function() {
   wh = window.innerHeight;
