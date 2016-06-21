@@ -211,7 +211,7 @@ var MovingTile = function(num, x1, y1, x2, y2, time, width) {
   this.width = 10 || width;
   this.state = true;
   this.init = function() {
-    $("#game-outer").append("<div class='game-elem moving-tile disabled' id='mt"+this.num+"' style='left: "+this.coords[0][0]+"%; top: "+this.coords[0][1]+"%; height: "+this.width+"%; width: "+this.width+"%'></div>");
+    $("#game-outer").append("<div id='mt"+this.num+"' class='game-elem moving-tile disabled' id='mt"+this.num+"' style='left: "+this.coords[0][0]+"%; top: "+this.coords[0][1]+"%; height: "+this.width+"%; width: "+this.width+"%'></div>");
     var that = this;
     this.toggleState();
     this.interval = setInterval(function() {
@@ -239,43 +239,62 @@ var MovingTile = function(num, x1, y1, x2, y2, time, width) {
 var gameElemClasses = {l: "left", r: "right", u: "up", d: "down", s: "start", e: "end"};
 
 //a should be ['l/r/u/p', dist, width] in % or ['t', time] or ['s', x, y, width] or ['e', width]
-var createElem = function(a) {
+var createElem = function(a, num) {
   switch(a[0]) {
     case 't': //timer
       timeAllowed = a[1];
       timeLeft = timeAllowed;
       break;
     case 's': //start
-      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+a[1]+"%; top: "+a[2]+"%; height: "+a[3]+"%; width: "+a[3]+"%'></div>");
+      $("#game-outer").append("<div id='game-elem"+num+"' class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+a[1]+"%; top: "+a[2]+"%; height: "+a[3]+"%; width: "+a[3]+"%'></div>");
       drawX = a[1];
       drawY = a[2];
       break;
     case 'r': //right
-      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[2]+"%; width: "+a[1]+"%'></div>");
+      $("#game-outer").append("<div id='game-elem"+num+"' class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[2]+"%; width: "+a[1]+"%'></div>");
       drawX += a[1];
       break;
     case 'd': //down
-      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[1]+"%; width: "+a[2]+"%'></div>");
+      $("#game-outer").append("<div id='game-elem"+num+"' class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[1]+"%; width: "+a[2]+"%'></div>");
       drawY += a[1];
       break;
     case 'l': //left
       drawX -= (a[1] - a[2]);
-      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[2]+"%; width: "+a[1]+"%'></div>");
+      $("#game-outer").append("<div id='game-elem"+num+"' class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[2]+"%; width: "+a[1]+"%'></div>");
       break;
     case 'u': //up
       drawY -= (a[1] - a[2]);
-      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[1]+"%; width: "+a[2]+"%'></div>");
+      $("#game-outer").append("<div id='game-elem"+num+"' class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[1]+"%; width: "+a[2]+"%'></div>");
       break;
     case 'e': //end
-      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[1]+"%; width: "+a[1]+"%'></div>");
+      $("#game-outer").append("<div id='game-elem"+num+"' class='game-elem "+gameElemClasses[a[0]]+"' style='left: "+drawX+"%; top: "+drawY+"%; height: "+a[1]+"%; width: "+a[1]+"%'></div>");
       break;
     case 'm': //moving tile
       movingTiles.push(new MovingTile(movingTiles.length, a[1], a[2], a[3], a[4], a[5], a[6]));
       break;
     default: //old system
-      $("#game-outer").append("<div class='game-elem "+gameElemClasses[a[0]]+"' style='top: "+a[2]+"%; left: "+a[1]+"%; height: "+a[4]+"%; width: "+a[3]+"%'></div>");
+      $("#game-outer").append("<div id='game-elem"+num+"' class='game-elem "+gameElemClasses[a[0]]+"' style='top: "+a[2]+"%; left: "+a[1]+"%; height: "+a[4]+"%; width: "+a[3]+"%'></div>");
       break;
   }
+};
+
+var undoElem = function(a, num) {
+  var elem = $("#game-elem"+num);
+  elem.remove();
+  switch(a[0]) {
+    case 'r': //right
+      drawX -= a[1];
+      break;
+    case 'd': //down
+      drawY -= a[1];
+      break;
+    case 'l': //left
+      drawX += (a[1] - a[2]);
+      break;
+    case 'u': //up
+      drawY += (a[1] - a[2]);
+      break;
+    }
 };
 
 var initLevel = function(level, wonParam) {
@@ -312,7 +331,7 @@ var initLevel = function(level, wonParam) {
       setTimeout(function() {finish();}, 2500);
     } else {
       for(i = 0; i < level.length; i++) {
-        createElem(level[i]);
+        createElem(level[i], i);
       }
       for(i = 0; i < movingTiles.length; i++) {
         movingTiles[i].init();
@@ -333,6 +352,119 @@ var initLevel = function(level, wonParam) {
   });
 };
 
+var initRandLevel = function(wonParam) {
+
+  function genRandElem(wonParam) {
+    var directs = ['u', 'd', 'l', 'r'];
+    var addAmt = 0;
+    var directChoice = directs[Math.floor(Math.random()*directs.length)];
+    if(directChoice === 'u' || directChoice === 'l') {
+      addAmt = 10;
+    }
+    return [directChoice, Math.floor(Math.random()*50+10+addAmt), 10];
+  }
+
+  function createRandElem() {
+    var randElem = genRandElem();
+    while(randElem[0] === rl[rl.length - 1][0] || // can't go back on itself
+          (randElem[0] === 'u' && rl[rl.length - 1][0] === 'd') ||
+          (randElem[0] === 'd' && rl[rl.length - 1][0] === 'u') ||
+          (randElem[0] === 'l' && rl[rl.length - 1][0] === 'r') ||
+          (randElem[0] === 'r' && rl[rl.length - 1][0] === 'l') ||
+          (randElem[0] === 'd' && drawY + randElem[1] >= 90) || //can't go out of bounds
+          (randElem[0] === 'u' && drawY - randElem[1] <= 0) ||
+          (randElem[0] === 'r' && drawX + randElem[1] >= 90) ||
+          (randElem[0] === 'l' && drawX - randElem[1] <= 0)) {
+      randElem = genRandElem();
+    }
+    rl.push(randElem);
+    createElem(rl[rl.length - 1], rl.length - 1);
+  }
+
+  function testIntersect(id) {
+    var elem = $("#game-elem"+id);
+    if(id >= 3) {
+      for(i = 2; i < id - 1; i++) {
+        if(overlap(elem, $("#game-elem"+i))) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  currLevel = 'rand';
+  var won = wonParam || 0;
+  clearTimeout(timerInterval);
+  timeLeft = timeAllowed;
+  $("#timer-inner").css("width", "0%");
+  $("#timer").addClass("hidden");
+  $(".start").removeClass("disabled");
+  levelStarted = false;
+  if(wonParam) {
+    score += 250;
+    for(i = 0; i < bonuses.length; i++) {
+      score += bonuses[i][0];
+    }
+    $("#score").html("score <strong>"+score+"</strong>");
+    clearTimeout(scoreHideTimeout);
+    setTimeout(function() {
+      $("#score-outer > *").removeClass("hidden");
+      clearTimeout(scoreHideTimeout);
+      scoreHideTimeout = setTimeout(function() {
+        $("#score-outer > *:not(#score)").addClass("hidden");
+        setTimeout(function() {
+          resetBonuses();
+        }, 1000);
+      }, 5000);
+    }, 250);
+    for(i = 0; i < movingTiles.length; i++) {
+      movingTiles[i].destroy();
+    }
+    movingTiles = [];
+    $(".game-elem").remove();
+    var rl = [['t', Math.floor(Math.random()*5+25)], ['s', Math.floor(Math.random()*90), Math.floor(Math.random()*90), 10]];
+    for(i = 0; i < rl.length; i++) {
+      createElem(rl[i], i);
+    }
+    var intersectAttempts = 0;
+    while(rl.length <= 8) {
+      createRandElem();
+      intersectAttempts = 0;
+      while(testIntersect(rl.length - 1)) {
+        intersectAttempts++;
+        undoElem(rl[rl.length - 1], rl.length - 1);
+        rl.pop();
+        createRandElem();
+        if(intersectAttempts >= 100) {
+          for(i = 2; i < rl.length; i++) { //restart if the level is a doo doo
+            undoElem(rl[rl.length - 1], rl.length - 1);
+            rl.pop();
+          }
+        }
+      }
+    }
+    rl.push(['e', 10]);
+    createElem(rl[rl.length - 1], rl.length - 1);
+    for(i = 0; i < movingTiles.length; i++) {
+      movingTiles[i].init();
+    }
+    if(hidePath) {
+      $(".game-elem").addClass("hidden");
+    }
+  }
+  $(".game-elem").addClass("hide-pointers");
+  $(".game-elem").focus();
+  $(".moving-tile").addClass("disabled");
+  $(".start").mouseenter(function() {
+    instructions("", "", false);
+    if(levelStarted === false && gameActive) {
+      startLevel();
+    }
+  });
+};
+
+
 var generatePityBonus = function() {
   var pityDescs = ["freebie", "free points", "just because", "since you look good today", "to make you feel good", "so you feel proud", "meh", "here you go", "sure", "why not?", "quick, take this", "hot potato with points"];
   addBonus(Math.ceil(Math.random()*5), pityDescs[Math.floor(Math.random()*pityDescs.length)]);
@@ -341,7 +473,7 @@ var generatePityBonus = function() {
 var startLevel = function() {
   $(".start").addClass("disabled");
   $(".moving-tile").removeClass('disabled');
-  $(".game-elem").removeClass("hide-pointers");
+  $(".game-elem:not(.end)").removeClass("hide-pointers");
   levelStarted = true;
   $("#timer").removeClass("hidden");
   $("#score-outer > *").addClass("hidden");
@@ -359,8 +491,17 @@ var startLevel = function() {
       initLevel(levels[currLevel]);
     }
   });
+
+  //in random levels, the end might cross over a path
+  //so the end can only be activated once the user hovers over the second-to-last path
+  var finalId = $(".end").attr("id");
+  var secondFinalPath = $("#game-elem"+(finalId[9] - 2));
+  secondFinalPath.mouseenter(function() {
+    console.log("ok");
+    $(".end").removeClass("hide-pointers");
+  });
   $(".end").mouseenter(function() {
-    if(levelStarted) {
+    if(levelStarted && !($(".end").hasClass("hide-pointers"))) {
 
       //bonuses
       addBonus(timeLeft, "extra time");

@@ -171,8 +171,13 @@ body {
 }
 
 .game-elem.end {
-  background-color: yellow;
+  background-color: green;
   z-index: 100 !important;
+}
+
+.end.hide-pointers {
+  pointer-events: none !important;
+  background-color: yellow;
 }
 
 .game-elem.left {
