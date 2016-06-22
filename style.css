@@ -305,7 +305,7 @@ body {
   text-align: center;
 }
 
-#intro-info {
+#intro-info, #gamemode-info {
   position: absolute;
   left: 20px;
   bottom: 40px;
@@ -313,6 +313,14 @@ body {
   height: auto;
   width: auto;
   max-width: 300px;
+}
+
+#gamemode-info {
+  left: auto;
+  bottom: 85px;
+  right: 170px;
+  text-align: right;
+  font-size: 15px;
 }
 
 .button {
@@ -332,6 +340,15 @@ body {
 
 .button:hover {
   transform: scale(1.1);
+}
+
+#intro-button {
+  bottom: 85px;
+}
+
+#gamemode-button {
+  font-size: 20px;
+  padding: 2.5px;
 }
 
 #score-outer {

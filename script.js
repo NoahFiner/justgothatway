@@ -20,6 +20,8 @@ var gameActive = false;
 var totalDeaths = 0;
 var bonusCount = 0;
 var origTime, endTime;
+var gm = "classic"; //classic or random
+var livesLeft = 3;
 
 function mobileCheck() {
  if (navigator.userAgent.match(/Android/i) ||
@@ -28,15 +30,21 @@ function mobileCheck() {
      navigator.userAgent.match(/iPad/i) ||
      navigator.userAgent.match(/iPod/i) ||
      navigator.userAgent.match(/BlackBerry/i) ||
-navigator.userAgent.match(/Windows Phone/i)) {
+     navigator.userAgent.match(/Windows Phone/i)) {
     return true;
   } else {
     return false;
   }
 }
 
-var finish = function() {
+var finish = function(lossParam) {
+  var loss = lossParam || 0;
   instructions("", "", false);
+  if(loss) {
+    $("#win-title").html("You lost...");
+  } else {
+    $("#win-title").html("You won!");
+  }
   $("#final-score").html("Final score: <strong>"+score+"</strong>");
   $("#end-outer").removeClass("hidden");
   $("#win-title > span").removeClass("hidden");
@@ -81,6 +89,7 @@ var introAnimation = function() {
   currLevel = 0;
   totalDeaths = 0;
   bonusCount = 0;
+  livesLeft = 3;
   score = -250;
   $(".intro-title:not(#win-title) > span").removeClass("hidden");
   setTimeout(function() {
@@ -88,10 +97,10 @@ var introAnimation = function() {
   }, 1000);
   if(errorBool === false) {
     setTimeout(function() {
-      $("#intro-info").removeClass("hidden");
+      $("#intro-info, #gamemode-info").removeClass("hidden");
     }, 1500);
     setTimeout(function() {
-      $("#intro-button").removeClass("hidden");
+      $("#intro-button, #gamemode-button").removeClass("hidden");
     }, 2000);
   }
 };
@@ -187,7 +196,11 @@ var updateTimer = function() {
   }
   if(timeLeft <= 0) {
     instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);
-    initLevel(levels[currLevel]);
+    if(gm === "classic") {
+      initLevel(levels[currLevel]);
+    } else if(gm === "endless") {
+      initLevel([]);
+    }
   }
 };
 
@@ -298,62 +311,7 @@ var undoElem = function(a, num) {
 };
 
 var initLevel = function(level, wonParam) {
-  var won = wonParam || 0;
-  clearTimeout(timerInterval);
-  timeLeft = timeAllowed;
-  $("#timer-inner").css("width", "0%");
-  $("#timer").addClass("hidden");
-  $(".start").removeClass("disabled");
-  levelStarted = false;
-  if(wonParam) {
-    score += 250;
-    for(i = 0; i < bonuses.length; i++) {
-      score += bonuses[i][0];
-    }
-    $("#score").html("score <strong>"+score+"</strong>");
-    clearTimeout(scoreHideTimeout);
-    setTimeout(function() {
-      $("#score-outer > *").removeClass("hidden");
-      clearTimeout(scoreHideTimeout);
-      scoreHideTimeout = setTimeout(function() {
-        $("#score-outer > *:not(#score)").addClass("hidden");
-        setTimeout(function() {
-          resetBonuses();
-        }, 1000);
-      }, 5000);
-    }, 250);
-    for(i = 0; i < movingTiles.length; i++) {
-      movingTiles[i].destroy();
-    }
-    movingTiles = [];
-    $(".game-elem").remove();
-    if(currLevel >= levels.length) {
-      setTimeout(function() {finish();}, 2500);
-    } else {
-      for(i = 0; i < level.length; i++) {
-        createElem(level[i], i);
-      }
-      for(i = 0; i < movingTiles.length; i++) {
-        movingTiles[i].init();
-      }
-      if(hidePath) {
-        $(".game-elem").addClass("hidden");
-      }
-    }
-  }
-  $(".game-elem").addClass("hide-pointers");
-  $(".game-elem").focus();
-  $(".moving-tile").addClass("disabled");
-  $(".start").mouseenter(function() {
-    instructions("", "", false);
-    if(levelStarted === false && gameActive) {
-      startLevel();
-    }
-  });
-};
-
-var initRandLevel = function(wonParam) {
-
+  //functions for randomized levels
   function genRandElem(wonParam) {
     var directs = ['u', 'd', 'l', 'r'];
     var addAmt = 0;
@@ -393,9 +351,9 @@ var initRandLevel = function(wonParam) {
     return false;
   }
 
-  currLevel = 'rand';
   var won = wonParam || 0;
   clearTimeout(timerInterval);
+  clearTimeout(scoreHideTimeout);
   timeLeft = timeAllowed;
   $("#timer-inner").css("width", "0%");
   $("#timer").addClass("hidden");
@@ -407,7 +365,6 @@ var initRandLevel = function(wonParam) {
       score += bonuses[i][0];
     }
     $("#score").html("score <strong>"+score+"</strong>");
-    clearTimeout(scoreHideTimeout);
     setTimeout(function() {
       $("#score-outer > *").removeClass("hidden");
       clearTimeout(scoreHideTimeout);
@@ -423,34 +380,58 @@ var initRandLevel = function(wonParam) {
     }
     movingTiles = [];
     $(".game-elem").remove();
-    var rl = [['t', Math.floor(Math.random()*5+25)], ['s', Math.floor(Math.random()*90), Math.floor(Math.random()*90), 10]];
-    for(i = 0; i < rl.length; i++) {
-      createElem(rl[i], i);
-    }
-    var intersectAttempts = 0;
-    while(rl.length <= 8) {
-      createRandElem();
-      intersectAttempts = 0;
-      while(testIntersect(rl.length - 1)) {
-        intersectAttempts++;
-        undoElem(rl[rl.length - 1], rl.length - 1);
-        rl.pop();
+
+    if(gm === "classic") {
+      if(currLevel >= levels.length) {
+        setTimeout(function() {finish();}, 2500);
+      } else {
+        for(i = 0; i < level.length; i++) {
+          createElem(level[i], i);
+        }
+        for(i = 0; i < movingTiles.length; i++) {
+          movingTiles[i].init();
+        }
+        if(hidePath) {
+          $(".game-elem").addClass("hidden");
+        }
+      }
+    } else if(gm === "endless") {
+      var rl = [['t', Math.floor(Math.random()*5+25)], ['s', Math.floor(Math.random()*90), Math.floor(Math.random()*90), 10]];
+      for(i = 0; i < rl.length; i++) {
+        createElem(rl[i], i);
+      }
+      var intersectAttempts = 0;
+      while(rl.length <= 8) {
         createRandElem();
-        if(intersectAttempts >= 100) {
-          for(i = 2; i < rl.length; i++) { //restart if the level is a doo doo
-            undoElem(rl[rl.length - 1], rl.length - 1);
-            rl.pop();
+        intersectAttempts = 0;
+        while(testIntersect(rl.length - 1)) {
+          intersectAttempts++;
+          undoElem(rl[rl.length - 1], rl.length - 1);
+          rl.pop();
+          createRandElem();
+          if(intersectAttempts >= 100) {
+            for(i = 2; i < rl.length; i++) { //restart if the level is a doo doo
+              undoElem(rl[rl.length - 1], rl.length - 1);
+              rl.pop();
+            }
           }
         }
       }
+      rl.push(['e', 10]);
+      createElem(rl[rl.length - 1], rl.length - 1);
+      for(i = 0; i < movingTiles.length; i++) {
+        movingTiles[i].init();
+      }
+      if(hidePath) {
+        $(".game-elem").addClass("hidden");
+      }
     }
-    rl.push(['e', 10]);
-    createElem(rl[rl.length - 1], rl.length - 1);
-    for(i = 0; i < movingTiles.length; i++) {
-      movingTiles[i].init();
-    }
-    if(hidePath) {
-      $(".game-elem").addClass("hidden");
+  } else {
+    if(gm === "endless") {
+      livesLeft--;
+      if(livesLeft <= 0) {
+        finish(true); //rip in death
+      }
     }
   }
   $(".game-elem").addClass("hide-pointers");
@@ -463,7 +444,6 @@ var initRandLevel = function(wonParam) {
     }
   });
 };
-
 
 var generatePityBonus = function() {
   var pityDescs = ["freebie", "free points", "just because", "since you look good today", "to make you feel good", "so you feel proud", "meh", "here you go", "sure", "why not?", "quick, take this", "hot potato with points"];
@@ -487,8 +467,16 @@ var startLevel = function() {
     if(levelStarted) {
       perfectRound = false;
       totalDeaths++;
-      instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);
-      initLevel(levels[currLevel]);
+      if(gm === "classic") {
+        instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)], true);
+      } else {
+        instructions(failureHeaders[Math.floor(Math.random()*failureHeaders.length)], failureInfos[Math.floor(Math.random()*failureInfos.length)] + " You have "+(livesLeft-1)+" lives left.", true);
+      }
+      if(gm === "classic") {
+        initLevel(levels[currLevel]);
+      } else if(gm === "endless") {
+        initLevel([]);
+      }
     }
   });
 
@@ -497,17 +485,20 @@ var startLevel = function() {
   var finalId = $(".end").attr("id");
   var secondFinalPath = $("#game-elem"+(finalId[9] - 2));
   secondFinalPath.mouseenter(function() {
-    console.log("ok");
     $(".end").removeClass("hide-pointers");
   });
   $(".end").mouseenter(function() {
     if(levelStarted && !($(".end").hasClass("hide-pointers"))) {
+      resetBonuses();
 
       //bonuses
       addBonus(timeLeft, "extra time");
       addBonus(currLevel + 1, "level difficulty");
       if(perfectRound) {
         addBonus(25, "perfect round");
+      }
+      if(((currLevel + 1) % 10) === 0) {
+        addBonus(50, "level "+(currLevel+1));
       }
       if(timeAllowed - timeLeft <= 5) {
         addBonus(25, "under 5s");
@@ -529,7 +520,11 @@ var startLevel = function() {
 
       instructions(successHeaders[Math.floor(Math.random()*successHeaders.length)], successInfos[Math.floor(Math.random()*successInfos.length)], true);
       currLevel += 1;
-      initLevel(levels[currLevel], true);
+      if(gm === "classic") {
+        initLevel(levels[currLevel], true);
+      } else if(gm === "endless") {
+        initLevel([], true);
+      }
     }
   });
 };
@@ -567,11 +562,23 @@ var startGame = function() {
   $("#intro-outer").addClass("hidden");
   setTimeout(function() {
     $(".start").removeClass("disabled");
-    $(".intro-title > span, .intro-subtitle, #intro-info, #intro-button, #stats > li, #stats").addClass("hidden");
+    $(".intro-title > span, .intro-subtitle, #intro-info, #gamemode-info #intro-button, #gamemode-button, #stats > li, #stats").addClass("hidden");
   }, 1000);
 };
 
+var gamemodes = [["classic", "Work through "+levels.length+" levels with infinite lives for the highest score and lowest time."], ["endless", "Play as many randomly generated levels as you can with three lives."]];
+var toggleGamemode = function() {
+  if(gm === "classic") {
+    gm = "endless";
+    $("#gamemode-info").html("<strong style='font-size: 30px'>"+gamemodes[1][0]+"</strong><br>"+gamemodes[1][1]);
+  } else {
+    gm = "classic";
+    $("#gamemode-info").html("<strong style='font-size: 30px'>"+gamemodes[0][0]+"</strong><br>"+gamemodes[0][1]);
+  }
+};
+
 $(document).ready(function() {
+  $("#gamemode-info").html("<strong style='font-size: 35px'>"+gamemodes[0][0]+"</strong><br>"+gamemodes[0][1]);
   if(mobileCheck()) {
     errorMessage("This game doesn't work on mobile.", "Just go that way uses CSS3 cursors which, obviously, aren't available on touchscreens.");
   }
