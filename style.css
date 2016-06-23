@@ -334,8 +334,8 @@ body {
   font-weight: 900;
   transform: scale(1);
   background-color: rgba(150, 150, 150, 1);
-  transition: transform 0.25s;
-  -webkit-transition: transform 0.25s;
+  transition: transform 0.25s, opacity 0.25s;
+  -webkit-transition: transform 0.25s, opacity 0.25s;
 }
 
 .button:hover {
@@ -349,6 +349,13 @@ body {
 #gamemode-button {
   font-size: 20px;
   padding: 2.5px;
+}
+
+#quit-button {
+  font-size: 15px;
+  padding: 2.5px;
+  bottom: 20px;
+  right: 20px;
 }
 
 #score-outer {

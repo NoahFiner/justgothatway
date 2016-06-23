@@ -38,10 +38,12 @@ function mobileCheck() {
 }
 
 var finish = function(lossParam) {
-  var loss = lossParam || 0;
+  var lossType = lossParam || 0;
   instructions("", "", false);
-  if(loss) {
+  if(lossType === "endless") {
     $("#win-title").html("You lost...");
+  } else if(lossType === "quit") {
+    $("#win-title").html("You quit...");
   } else {
     $("#win-title").html("You won!");
   }
@@ -358,6 +360,7 @@ var initLevel = function(level, wonParam) {
   $("#timer-inner").css("width", "0%");
   $("#timer").addClass("hidden");
   $(".start").removeClass("disabled");
+  $("#quit-button").removeClass("hidden");
   levelStarted = false;
   if(wonParam) {
     score += 250;
@@ -396,12 +399,17 @@ var initLevel = function(level, wonParam) {
         }
       }
     } else if(gm === "endless") {
-      var rl = [['t', Math.floor(Math.random()*5+25)], ['s', Math.floor(Math.random()*90), Math.floor(Math.random()*90), 10]];
+      var amtOfLevels = Math.floor(-((Math.pow(10, 20/(currLevel+20))))+11) + 1;
+      var baseTime = Math.ceil(4*amtOfLevels);
+      console.log("basetime: "+baseTime);
+      var timeMultiplier = 8*(Math.pow(6*Math.E, (-0.1*(currLevel+5)))) + 1;
+      console.log("multiplier: "+timeMultiplier);
+      var rl = [['t', Math.ceil(baseTime*timeMultiplier)], ['s', Math.floor(Math.random()*90), Math.floor(Math.random()*90), 10]];
       for(i = 0; i < rl.length; i++) {
         createElem(rl[i], i);
       }
       var intersectAttempts = 0;
-      while(rl.length <= 8) {
+      while(rl.length <= amtOfLevels) {
         createRandElem();
         intersectAttempts = 0;
         while(testIntersect(rl.length - 1)) {
@@ -430,7 +438,7 @@ var initLevel = function(level, wonParam) {
     if(gm === "endless") {
       livesLeft--;
       if(livesLeft <= 0) {
-        finish(true); //rip in death
+        finish(gm); //rip in death
       }
     }
   }
@@ -452,6 +460,7 @@ var generatePityBonus = function() {
 
 var startLevel = function() {
   $(".start").addClass("disabled");
+  $("#quit-button").addClass("hidden");
   $(".moving-tile").removeClass('disabled');
   $(".game-elem:not(.end)").removeClass("hide-pointers");
   levelStarted = true;
@@ -483,8 +492,8 @@ var startLevel = function() {
   //in random levels, the end might cross over a path
   //so the end can only be activated once the user hovers over the second-to-last path
   var finalId = $(".end").attr("id");
-  var secondFinalPath = $("#game-elem"+(finalId[9] - 2));
-  secondFinalPath.mouseenter(function() {
+  var finalPath = $("#game-elem"+(finalId.substring(9) - 1));
+  finalPath.mouseenter(function() {
     $(".end").removeClass("hide-pointers");
   });
   $(".end").mouseenter(function() {
@@ -557,7 +566,9 @@ var startGame = function() {
     currLevel = levels.length - 1;
   }
   initLevel(levels[currLevel], true);
+  resetBonuses();
   $(".start").addClass("disabled");
+  $("#quit-button").removeClass("hidden");
   clearTimeout(introCirclesInterval);
   $("#intro-outer").addClass("hidden");
   setTimeout(function() {
