@@ -22,6 +22,8 @@ var bonusCount = 0;
 var origTime, endTime;
 var gm = "classic"; //classic or random
 var livesLeft = 3;
+var optionsHidden = true;
+var endlessHighscore = 0, classicHighscore = 0;
 
 function mobileCheck() {
  if (navigator.userAgent.match(/Android/i) ||
@@ -47,14 +49,31 @@ var finish = function(lossParam) {
   } else {
     $("#win-title").html("You won!");
   }
+  if(gm === "classic") {
+    if(score > parseInt(classicHighscore)) {
+      classicHighscore = score;
+      setCookie("classicHighscore", score, 99999);
+    }
+    $("#highscore").html("Highscore: <strong>"+classicHighscore+"</strong>");
+  } else {
+    if(score > parseInt(endlessHighscore)) {
+      endlessHighscore = score;
+      setCookie("endlessHighscore", score, 99999);
+    }
+    $("#highscore").html("Highscore: <strong>"+endlessHighscore+"</strong>");
+  }
+
+  $("#classic-highscore").html(classicHighscore);
+  $("#endless-highscore").html(endlessHighscore);
   $("#final-score").html("Final score: <strong>"+score+"</strong>");
   $("#end-outer").removeClass("hidden");
   $("#win-title > span").removeClass("hidden");
+
   for(i = 0; i < 25; i++) {
     $("#fireworks-background").append("<div class='firework inactive' style='left: "+(Math.random()*75 + 12.5)+"%; top: "+(Math.random()*75 + 10)+"%; transform: rotate("+(Math.random()*720-360)+"deg);'></div>");
   }
   setTimeout(function() {
-    $(".intro-title, .intro-subtitle").removeClass("hidden");
+    $(".intro-title, .intro-subtitle, #highscore").removeClass("hidden");
     $(".firework").removeClass("inactive");
   }, 500);
   setTimeout(function() {
@@ -84,10 +103,32 @@ var undoErrorMessage = function() {
   $(".intro-subtitle").addClass("hidden");
 };
 
+//cookies yum
+var setCookie = function(name, val, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires=" + d.toUTCString();
+  document.cookie = "" + name + "=" + val + "; " + expires;
+};
+
+var getCookie = function(name) {
+  var findString = name + "=";
+  var cookieArray = document.cookie.split(';');
+  for(var i = 0; i < cookieArray.length; i++) {
+    if(cookieArray[i].search(findString) != -1) {
+      return (cookieArray[i].substr(findString.length,
+                                  cookieArray[i].length - findString.length)
+                                  .replace(/=/g, ""));
+    }
+  }
+  return "";
+};
+
+
 //intro animation
 var introAnimation = function() {
   $("#intro-outer").removeClass("hidden");
-  $("#menu-button, #end-outer, #final-score").addClass("hidden");
+  $("#menu-button, #end-outer, #final-score, #highscore").addClass("hidden");
   currLevel = 0;
   totalDeaths = 0;
   bonusCount = 0;
@@ -519,7 +560,10 @@ var startLevel = function() {
       if(((currLevel + 1) % 10) === 0) {
         addBonus(50, "level "+(currLevel+1));
       }
-      if(timeAllowed - timeLeft <= 5) {
+      if(timeAllowed - timeLeft <= 3) {
+        addBonus(35, "under 3s");
+      }
+      if(timeAllowed - timeLeft > 3 && timeAllowed - timeLeft <= 5) {
         addBonus(25, "under 5s");
       }
       if(timeAllowed - timeLeft > 5 && timeAllowed - timeLeft <= 10) {
@@ -588,18 +632,48 @@ var startGame = function() {
 };
 
 var gamemodes = [["classic", "Work through "+levels.length+" levels with infinite lives for the highest score and lowest time."], ["endless", "Play as many randomly generated levels as you can with three lives."]];
-var toggleGamemode = function() {
-  if(gm === "classic") {
-    gm = "endless";
-    $("#gamemode-info").html("<strong style='font-size: 30px'>"+gamemodes[1][0]+"</strong><br>"+gamemodes[1][1]);
+var setGamemode = function(gamemode) {
+  gm = gamemode;
+  $("#intro-button").html("start<br><span class='start-sub'>"+gm+"</span>");
+};
+
+var setOptionState = function(hidden) {
+  optionsHidden = hidden;
+  if(hidden) {
+    $("#options-outer").addClass("hidden");
   } else {
-    gm = "classic";
-    $("#gamemode-info").html("<strong style='font-size: 30px'>"+gamemodes[0][0]+"</strong><br>"+gamemodes[0][1]);
+    $("#options-outer").removeClass("hidden");
   }
 };
 
 $(document).ready(function() {
+  if(getCookie("classicHighscore") === "") {
+    setCookie("classicHighscore", "0", 99999);
+  } else {
+    classicHighscore = getCookie("classicHighscore");
+  }
+
+  if(getCookie("endlessHighscore") === "") {
+    setCookie("endlessHighscore", "0", 99999);
+  } else {
+    endlessHighscore = getCookie("endlessHighscore");
+  }
+
+  $("#classic-highscore").html(classicHighscore);
+  $("#endless-highscore").html(endlessHighscore);
+
   $("#gamemode-info").html("<strong style='font-size: 35px'>"+gamemodes[0][0]+"</strong><br>"+gamemodes[0][1]);
+  $(".gamemode-option").click(function() {
+    $(".gamemode-option").removeClass("selected");
+    $(this).addClass("selected");
+    setGamemode($(this).attr("id"));
+  });
+  $("#options-outer").click(function(event) {
+    if(!$(event.target).closest('#options').length &&
+       !$(event.target).is('#options')) {
+      setOptionState(true);
+    }
+  });
   if(mobileCheck()) {
     errorMessage("This game doesn't work on mobile.", "Just go that way uses CSS3 cursors which, obviously, aren't available on touchscreens.");
   }

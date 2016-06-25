@@ -119,6 +119,14 @@ body {
   transition-delay: 0.5s;
   -webkit-transition-delay: 0.5s;
 }
+.delay6 {
+  transition-delay: 0.6s;
+  -webkit-transition-delay: 0.6s;
+}
+.delay7 {
+  transition-delay: 0.7s;
+  -webkit-transition-delay: 0.7s;
+}
 
 .pretty.hidden {
   transform: translateY(-20px);
@@ -245,7 +253,7 @@ body {
   opacity: 0;
 }
 
-#intro-outer, #message-outer, #end-outer {
+#intro-outer, #message-outer, #end-outer, #options-outer {
   z-index: 10000;
   background-color: white;
   width: 100vw;
@@ -289,6 +297,11 @@ body {
   pointer-events: none;
 }
 
+#options-outer.hidden {
+  background-color: rgba(0, 0, 0, 0);
+  pointer-events: none;
+}
+
 .intro-title {
   text-align: center;
   font-size: 8vw;
@@ -302,6 +315,11 @@ body {
 
 .intro-subtitle {
   font-size: 4vw;
+  text-align: center;
+}
+
+.intro-subtitle-subtitle {
+  font-size: 2vw;
   text-align: center;
 }
 
@@ -324,6 +342,7 @@ body {
 }
 
 .button {
+  text-align: center;
   position: absolute;
   right: 20px;
   bottom: 40px;
@@ -344,6 +363,8 @@ body {
 
 #intro-button {
   bottom: 85px;
+  line-height: 20px;
+  padding-top: 15px;
 }
 
 #gamemode-button {
@@ -389,4 +410,84 @@ body {
 #stats > li {
   list-style-type: none;
   font-size: 30px;
+}
+
+.start-sub {
+  font-size: 15px;
+}
+
+#options-outer {
+  z-index: 89465798;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: background-color 0.5s;
+  -webkit-transition: background-color 0.5s;
+}
+
+#options {
+  cursor: default;
+  text-align: left;
+  height: 100vh;
+  width: 500px;
+  border-left: 10px solid #ddd;
+  right: 0;
+  left: auto;
+  bottom: 0;
+  background-color: #fff;
+  box-shadow: 0 0 5px solid rgba(0, 0, 0, 0.3);
+  position: absolute;
+  overflow: scroll;
+  transition: right 0.5s;
+  -webkit-transition: right 0.5s;
+}
+
+#options-outer.hidden > #options {
+  right: -510px !important;
+}
+
+#options > h1 {
+  margin-top: 20px;
+  margin-left: 10%;
+  font-size: 50px;
+  color: black;
+}
+
+#options > h2 {
+  margin: 10px;
+  font-size: 40px;
+  color: black;
+  margin-left: 10%;
+}
+
+#options > hr {
+  margin: 20px auto;
+  margin-top: 10px;
+  width: 80%;
+  height: 2px;
+  background-color: rgba(230, 230, 230, 1);
+  border: none;
+}
+
+.gamemode-option {
+  cursor: pointer;
+  padding: 10px;
+  width: 80%;
+  margin-left: 10%;
+  transform: scale(1);
+  transition: transform 0.25s;
+  background-color: transparent;
+  transition: transform 0.25s, background-color 0.25s;
+  -webkit-transition: transform 0.25s, background-color 0.25s;
+}
+
+.gamemode-option:hover {
+  transform: scale(1.05);
+}
+
+.gamemode-option:active {
+  transform: scale(1.1);
+}
+
+.gamemode-option.selected {
+  background-color: rgba(230, 230, 230, 1);
 }

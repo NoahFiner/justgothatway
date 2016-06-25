@@ -11,11 +11,20 @@
 </head>
 <body>
   <div id="everything-outer">
+    <div id="options-outer" class="hidden">
+      <div id="options">
+        <h1>options</h1>
+        <hr>
+        <p id="classic" class="gamemode-option selected"><strong style='font-size: 30px'>classic</strong><br>Work through 40 levels with infinite lives for the highest score and lowest time.<br><span style="font-size: 12px">highscore <strong id="classic-highscore">1234</strong></span></p>
+        <p id="endless" class="gamemode-option"><strong style='font-size: 30px'>endless</strong><br>Play as many randomly generated levels as you can with three lives.<br><span style="font-size: 12px">highscore <strong id="endless-highscore">4321</strong></span></p>
+      </div>
+    </div>
     <div id="end-outer" class="hidden">
       <div id="fireworks-background"></div>
       <div class="relative-full">
         <h1 id="win-title" class="intro-title"><span class="pretty pretty-title hidden">You won!</span></h1>
         <p id="final-score" class="intro-subtitle delay5 pretty pretty-title hidden">Final score: <strong></strong></p>
+        <p id="highscore" class="intro-subtitle-subtitle delay7 pretty pretty-title hidden">Highscore: <strong></strong></p>
         <p id="menu-button" class="button pretty pretty-invert-intro hidden" onclick="introAnimation(); introCirclesInit();">main menu</p>
         <ul id="stats" class="pretty hidden">It took you
           <li id="seconds" class="pretty delay1 hidden"><strong>4</strong> seconds</li>
@@ -39,10 +48,9 @@
           <span class="pretty pretty-title delay3 hidden">way</span>
         </h1>
         <p class="intro-subtitle pretty pretty-title hidden">It shouldn't be that hard.</p>
-        <p id="gamemode-info" class="pretty pretty-invert-intro delay5 hidden"></p>
         <p id="intro-info" class="pretty pretty-invert-intro hidden">This game uses CSS3 cursors and does not work on mobile and older browsers.<br><br>If your cursor isn't an arrow when hovering over <strong style="cursor: e-resize">here</strong>, you can't play.</p>
-        <p id="gamemode-button" class="button pretty pretty-invert-intro delay5 hidden" onclick="toggleGamemode()">toggle gamemode</p>
-        <p id="intro-button" class="button pretty pretty-invert-intro hidden" onclick="startGame()">start</p>
+        <p id="gamemode-button" class="button pretty pretty-invert-intro delay5 hidden" onclick="setOptionState(false);">settings</p>
+        <p id="intro-button" class="button pretty pretty-invert-intro hidden" onclick="startGame()">start<br><span class="start-sub">classic</span></p>
       </div>
       <div id="circle-background">
       </div>
