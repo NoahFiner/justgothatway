@@ -17,6 +17,10 @@
         <hr>
         <p id="classic" class="gamemode-option selected"><strong style='font-size: 30px'>classic</strong><br>Work through 40 levels with infinite lives for the highest score and lowest time.<br><span style="font-size: 12px">highscore <strong id="classic-highscore">1234</strong></span></p>
         <p id="endless" class="gamemode-option"><strong style='font-size: 30px'>endless</strong><br>Play as many randomly generated levels as you can with three lives.<br><span style="font-size: 12px">highscore <strong id="endless-highscore">4321</strong></span></p>
+        <hr>
+        <form id="starting-level">
+          Start at level <input type="number" name="starting-level" value="1" min="1" max="40"></input> in classic.
+        </form>
       </div>
     </div>
     <div id="end-outer" class="hidden">
@@ -27,10 +31,10 @@
         <p id="highscore" class="intro-subtitle-subtitle delay7 pretty pretty-title hidden">Highscore: <strong></strong></p>
         <p id="menu-button" class="button pretty pretty-invert-intro hidden" onclick="introAnimation(); introCirclesInit();">main menu</p>
         <ul id="stats" class="pretty hidden">It took you
-          <li id="seconds" class="pretty delay1 hidden"><strong>4</strong> seconds</li>
-          <li id="deaths" class="pretty delay2 hidden"><strong>4</strong> deaths</li>
-          <li id="bonuses" class="pretty delay3 hidden"><strong>4</strong> bonuses</li>
-          <li id="levels" class="pretty delay4 hidden"><strong>4</strong> levels</li>
+          <li id="seconds" class="pretty delay1 hidden"><strong></strong> seconds</li>
+          <li id="deaths" class="pretty delay2 hidden"><strong></strong> deaths</li>
+          <li id="bonuses" class="pretty delay3 hidden"><strong></strong> bonuses</li>
+          <li id="levels" class="pretty delay4 hidden"><strong></strong> levels</li>
       </div>
     </div>
     <div id="message-outer" class="hidden">

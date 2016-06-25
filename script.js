@@ -19,11 +19,14 @@ var errorBool = false;
 var gameActive = false;
 var totalDeaths = 0;
 var bonusCount = 0;
+var levelCount = 0;
 var origTime, endTime;
 var gm = "classic"; //classic or random
 var livesLeft = 3;
 var optionsHidden = true;
 var endlessHighscore = 0, classicHighscore = 0;
+var startingLevel = 0;
+var highestLevel = 0;
 
 function mobileCheck() {
  if (navigator.userAgent.match(/Android/i) ||
@@ -50,6 +53,11 @@ var finish = function(lossParam) {
     $("#win-title").html("You won!");
   }
   if(gm === "classic") {
+    if(currLevel > highestLevel) {
+      highestLevel = currLevel;
+      setCookie("highestLevel", highestLevel, 99999);
+      $("input[name='starting-level']").attr("max", highestLevel + 1);
+    }
     if(score > parseInt(classicHighscore)) {
       classicHighscore = score;
       setCookie("classicHighscore", score, 99999);
@@ -80,7 +88,7 @@ var finish = function(lossParam) {
     $(".firework").fadeOut(500, function() {$(this).remove();});
     $("#menu-button").removeClass("hidden");
     $("#deaths").html("<strong>"+totalDeaths+"</strong> deaths");
-    $("#levels").html("<strong>"+currLevel+"</strong> levels");
+    $("#levels").html("<strong>"+levelCount+"</strong> levels");
     $("#bonuses").html("<strong>"+bonusCount+"</strong> bonuses");
     var time = new Date();
     $("#seconds").html("<strong>"+Math.round((time.getTime()-origTime)/1000)+"</strong> seconds");
@@ -129,9 +137,10 @@ var getCookie = function(name) {
 var introAnimation = function() {
   $("#intro-outer").removeClass("hidden");
   $("#menu-button, #end-outer, #final-score, #highscore").addClass("hidden");
-  currLevel = 0;
+  currLevel = startingLevel; //probably 0
   totalDeaths = 0;
   bonusCount = 0;
+  levelCount = 0;
   livesLeft = 3;
   score = -250;
   $(".intro-title:not(#win-title) > span").removeClass("hidden");
@@ -549,6 +558,7 @@ var startLevel = function() {
   });
   $(".end").mouseenter(function() {
     if(levelStarted && !($(".end").hasClass("hide-pointers"))) {
+      levelCount++;
       resetBonuses();
 
       //bonuses
@@ -616,6 +626,11 @@ var startGame = function() {
   gameActive = true;
   var time = new Date();
   origTime = time.getTime();
+  if(startingLevel >= 0 && startingLevel <= highestLevel && gm === "classic") {
+    currLevel = startingLevel;
+  } else {
+    currLevel = 0;
+  }
   if(chooseMostRecentLevel) {
     currLevel = levels.length - 1;
   }
@@ -634,7 +649,11 @@ var startGame = function() {
 var gamemodes = [["classic", "Work through "+levels.length+" levels with infinite lives for the highest score and lowest time."], ["endless", "Play as many randomly generated levels as you can with three lives."]];
 var setGamemode = function(gamemode) {
   gm = gamemode;
-  $("#intro-button").html("start<br><span class='start-sub'>"+gm+"</span>");
+  if(gm === "classic") {
+    $("#intro-button").html("start<br><span class='start-sub'>"+gm+", level "+(startingLevel+1)+"</span>");
+  } else {
+    $("#intro-button").html("start<br><span class='start-sub'>"+gm+"</span>");
+  }
 };
 
 var setOptionState = function(hidden) {
@@ -647,6 +666,12 @@ var setOptionState = function(hidden) {
 };
 
 $(document).ready(function() {
+  $(document).keypress(function(e) { //pressing enter reloads the page for some reason
+    if(e.which == 13) {
+      e.preventDefault();
+    }
+  });
+
   if(getCookie("classicHighscore") === "") {
     setCookie("classicHighscore", "0", 99999);
   } else {
@@ -658,6 +683,13 @@ $(document).ready(function() {
   } else {
     endlessHighscore = getCookie("endlessHighscore");
   }
+
+  if(getCookie("highestLevel") === "") {
+    setCookie("highestLevel", "0", 99999);
+  } else {
+    highestLevel = getCookie("highestLevel");
+  }
+  $("input[name='starting-level']").attr("max", highestLevel + 1);
 
   $("#classic-highscore").html(classicHighscore);
   $("#endless-highscore").html(endlessHighscore);
@@ -672,6 +704,17 @@ $(document).ready(function() {
     if(!$(event.target).closest('#options').length &&
        !$(event.target).is('#options')) {
       setOptionState(true);
+    }
+  });
+  $("input[name='starting-level']").change(function() {
+    if(parseInt($(this).val()) >= 1 && parseInt($(this).val()) <= (highestLevel + 1) && gm === "classic") {
+      $(this).removeClass("invalid");
+      startingLevel = parseInt($(this).val()) - 1;
+      $("#intro-button").html("start<br><span class='start-sub'>classic, level "+(startingLevel+1)+"</span>");
+    } else {
+      $(this).addClass("invalid");
+      startingLevel = 0;
+      $("#intro-button").html("start<br><span class='start-sub'>classic, level "+(startingLevel+1)+"</span>");
     }
   });
   if(mobileCheck()) {
