@@ -56,7 +56,7 @@ var finish = function(lossParam) {
     if(currLevel > highestLevel) {
       highestLevel = currLevel;
       setCookie("highestLevel", highestLevel, 99999);
-      $("input[name='starting-level']").attr("max", highestLevel + 1);
+      $("input[name='starting-level']").attr("max", parseInt(highestLevel) + 1);
     }
     if(score > parseInt(classicHighscore)) {
       classicHighscore = score;
@@ -689,7 +689,7 @@ $(document).ready(function() {
   } else {
     highestLevel = getCookie("highestLevel");
   }
-  $("input[name='starting-level']").attr("max", highestLevel + 1);
+  $("input[name='starting-level']").attr("max", parseInt(highestLevel) + 1);
 
   $("#classic-highscore").html(classicHighscore);
   $("#endless-highscore").html(endlessHighscore);
