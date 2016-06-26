@@ -27,6 +27,7 @@ var optionsHidden = true;
 var endlessHighscore = 0, classicHighscore = 0;
 var startingLevel = 0;
 var highestLevel = 0;
+var lastEndCoords = [0, 0];
 
 function mobileCheck() {
  if (navigator.userAgent.match(/Android/i) ||
@@ -94,6 +95,7 @@ var finish = function(lossParam) {
     var time = new Date();
     $("#seconds").html("<strong>"+Math.round((time.getTime()-origTime)/1000)+"</strong> seconds");
     $("#stats > li, #stats").removeClass("hidden");
+    $("#score-outer > *").addClass("hidden");
   }, 3500);
   clearTimeout(timerInterval);
 };
@@ -187,7 +189,7 @@ var introCircles = function() {
 
 //success messages
 successHeaders = ["Good job!", "You did it!", "Great work!", "Excellent work!", "That was quick.", "You're good at going that way.", "Oh look, you did it.", "That was impressive..."];
-successInfos = ["That wasn't supposed to be hard, though.", "You could have done that much faster, though.", "Like you'll do better next time.", "The next level is much harder.", "It just gets harder from here.", "Even though that was meant to be easy.", "Your parents would be proud of you.", "It really took that long to win, though?", "That should be really easy to improve on.", "Even though you still have a lot of room for improvement."];
+successInfos = ["That wasn't supposed to be hard, though.", "You could have done that much faster, though.", "Like you'll do better next time.", "The next level is much harder.", "It just gets harder from here.", "That was supposed to be easy, though.", "Your parents would be proud of you.", "It really took that long to win, though?", "At least that will be easy to improve on.", "You still have a lot of room for improvement, though."];
 
 //failure messages
 failureHeaders = ["Whoops", "Nope", "Really?", "Come on", "Wow", "Seriously?", "Nah"];
@@ -444,7 +446,9 @@ var initLevel = function(level, wonParam) {
   $("#timer-inner").css("width", "0%");
   $("#timer").addClass("hidden");
   $(".start").removeClass("disabled");
-  $("#quit-button").removeClass("hidden");
+  if(currLevel != 50) {
+    $("#quit-button").removeClass("hidden");
+  }
   levelStarted = false;
   if(wonParam) {
     clearTimeout(fireworkTimeout);
@@ -509,11 +513,19 @@ var initLevel = function(level, wonParam) {
         setCookie("endlessHighscore", score, 99999);
       }
       var amtOfLevels = Math.floor(-((Math.pow(10, 20/(currLevel+20))))+11) + 1;
-      var baseTime = Math.ceil(4*amtOfLevels);
+      var baseTime = Math.ceil(2*amtOfLevels);
       // console.log("basetime: "+baseTime);
-      var timeMultiplier = 4*(Math.pow(6*Math.E, (-0.1*(currLevel+5)))) + 1;
+      var timeMultiplier = 8*(Math.pow(6*Math.E, (-0.1*(currLevel+5)))) + 1;
       // console.log("multiplier: "+timeMultiplier);
-      var rl = [['t', Math.ceil(baseTime*timeMultiplier)], ['s', Math.floor(Math.random()*90), Math.floor(Math.random()*90), 10]];
+      var validStartCoords = [Math.floor(Math.random()*90), Math.floor(Math.random()*90)];
+      while((validStartCoords[0] > lastEndCoords[0] - 10) &&
+            (validStartCoords[0] < lastEndCoords[0] + 10) &&
+            (validStartCoords[1] > lastEndCoords[1] - 10) &&
+            (validStartCoords[1] < lastEndCoords[1] + 10)) {
+        console.log("start overlaps previous end");
+        validStartCoords = [Math.floor(Math.random()*90), Math.floor(Math.random()*90)];
+      }
+      var rl = [['t', Math.ceil(baseTime*timeMultiplier)], ['s', validStartCoords[0], validStartCoords[1], 10]];
       for(i = 0; i < rl.length; i++) {
         createElem(rl[i], i);
       }
@@ -539,6 +551,8 @@ var initLevel = function(level, wonParam) {
       for(i = 0; i < movingTiles.length; i++) {
         movingTiles[i].init();
       }
+      endOffset = $(".end").offset();
+      lastEndCoords = [endOffset.left*100/window.innerWidth, endOffset.top*100/window.innerHeight];
       if(hidePath) {
         $(".game-elem").addClass("hidden");
       }
