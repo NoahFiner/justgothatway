@@ -2,7 +2,7 @@ var mx = 0; // mouse x
 var my = 0; // mouse y
 var wh = window.innerHeight;
 var ww = window.innerWidth;
-var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval, introCirclesInterval, scoreHideTimeout;
+var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval, introCirclesInterval, scoreHideTimeout, fireworkTimeout, fireworkHideTimeout;
 var levelStarted = false;
 var currLevel = 0;
 var timeLeft = 0;
@@ -43,6 +43,7 @@ function mobileCheck() {
 }
 
 var finish = function(lossParam) {
+  $("#score-outer > *").addClass("hidden");
   var lossType = lossParam || 0;
   instructions("", "", false);
   if(lossType === "endless") {
@@ -80,15 +81,12 @@ var finish = function(lossParam) {
   $("#end-outer").removeClass("hidden");
   $("#win-title > span").removeClass("hidden");
 
-  for(i = 0; i < 25; i++) {
-    $("#fireworks-background").append("<div class='firework inactive' style='left: "+(Math.random()*75 + 12.5)+"%; top: "+(Math.random()*75 + 10)+"%; transform: rotate("+(Math.random()*720-360)+"deg);'></div>");
-  }
   setTimeout(function() {
     $(".intro-title, .intro-subtitle, #highscore").removeClass("hidden");
-    $(".firework").removeClass("inactive");
+    firework(50, 45, 25);
   }, 500);
+
   setTimeout(function() {
-    $(".firework").fadeOut(500, function() {$(this).remove();});
     $("#menu-button").removeClass("hidden");
     $("#deaths").html("<strong>"+totalDeaths+"</strong> deaths");
     $("#levels").html("<strong>"+levelCount+"</strong> levels");
@@ -98,6 +96,19 @@ var finish = function(lossParam) {
     $("#stats > li, #stats").removeClass("hidden");
   }, 3500);
   clearTimeout(timerInterval);
+};
+
+var firework = function(x, y, amt) {
+  clearTimeout(fireworkTimeout);
+  clearTimeout(fireworkHideTimeout);
+  $("#fireworks-styling").html(".firework.inactive { left: "+x+"% !important; top: "+y+"% !important; opacity: 0 !important; transform: rotate(0deg) !important; }");
+  for(i = 0; i < amt; i++) {
+    $("#fireworks-background").append("<div class='firework inactive' style='left: "+(Math.random()*100 + x - 50)+"%; top: "+(Math.random()*100 + y - 50)+"%; transform: rotate("+(Math.random()*720-360)+"deg);'></div>");
+  }
+  fireworkTimeout = setTimeout(function() {$(".firework").removeClass("inactive");}, 50);
+  fireworkHideTimeout = setTimeout(function() {
+    $(".firework").fadeOut(500, function() {$(this).remove();});
+  }, 3000);
 };
 
 var errorMessage = function(msg, desc) {
@@ -175,15 +186,15 @@ var introCircles = function() {
 };
 
 //success messages
-successHeaders = ["Good job.", "You did it!", "Great work!", "Excellent work.", "That was surprisingly quick.", "You're good at just going that way."];
-successInfos = ["That wasn't supposed to be hard, though.", "That should have been easier, though.", "Like you'll do better next time.", "The next level is much harder.", "It just gets harder from here.", "Even though that was meant to be easy.", "Your parents would be proud of you.", "It really took that long to win, though?"];
+successHeaders = ["Good job!", "You did it!", "Great work!", "Excellent work!", "That was quick.", "You're good at going that way.", "Oh look, you did it.", "That was impressive..."];
+successInfos = ["That wasn't supposed to be hard, though.", "You could have done that much faster, though.", "Like you'll do better next time.", "The next level is much harder.", "It just gets harder from here.", "Even though that was meant to be easy.", "Your parents would be proud of you.", "It really took that long to win, though?", "That should be really easy to improve on.", "Even though you still have a lot of room for improvement."];
 
 //failure messages
-failureHeaders = ["Whoops", "Nope", "Really?", "Come on", "Wow", "Seriously?", "That's not the way", "Nah"];
-failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just had to go that way.", "You should have gone that way.", "Why didn't you just go that way?", "All you had to do was go that way.", "All you had to do was go that way.", "Did you really not go that way?", "You need to go that way next time."];
+failureHeaders = ["Whoops", "Nope", "Really?", "Come on", "Wow", "Seriously?", "Nah"];
+failureInfos = ["Looks like you didn't just go that way.", "Honestly you just had to go that way.", "You should have just gone that way.", "Why didn't you just go that way?", "All you had to do was just go that way.", "You just had to go that way.", "Did you really not just go that way?", "You need to just go that way."];
 
 //shows the level. development only
-var hidePath = false;
+var hidePath = true;
 
 //chooses most recent level. for testing new levels.
 var chooseMostRecentLevel = false;
@@ -238,7 +249,7 @@ var levels = [
   [['t', 5], ['s', 45, 0, 10], ['d', 90, 10], ['r', 20, 10], ['e', 10], ['m', 35, 10, 55, 90, 1500, 10]],
   [['t', 30], ['s', 39, 0, 10], ['d', 90, 10], ['r', 12, 10], ['u', 90, 10], ['e', 10], ['m', 34, 10, 34, 70, 4000, 10], ['m', 45, 70, 45, 10, 4000, 10], ['m', 56, 10, 56, 70, 4000, 10]],
   [['t', 3], ['s', 0, 45, 10], ['r', 70, 10], ['d', 20, 10], ['e', 10], ['m', 0, 0, 90, 90, 500, 10], ['m', 30, 45, 60, 10, 657, 10], ['m', 70, 80, 20, 10, 800, 10]],
-  [['t', 4], ['s', 0, 0, 10], ['r', 80, 10], ['d', 60, 10], ['l', 40, 10], ['d', 20, 10], ['e', 10], ['m', 90, 0, 50, 90, 1000, 10]],
+  [['t', 4], ['s', 0, 0, 10], ['r', 80, 10], ['d', 60, 10], ['l', 40, 10], ['e', 10], ['m', 90, 0, 50, 90, 1000, 10]],
   [['t', 50], ['s', 0, 45, 10], ['r', 50, 10], ['e', 10], ['m', 20, 10, 20, 60, 2000, 10], ['m', 20, 20, 20, 70, 2000, 10], ['m', 20, 30, 20, 80, 2000, 10], ['m', 30, 10, 30, 60, 2000, 10], ['m', 30, 20, 30, 70, 2000, 10], ['m', 30, 30, 30, 80, 2000, 10], ['m', 40, 10, 40, 60, 2000, 10], ['m', 40, 20, 40, 70, 2000, 10], ['m', 40, 30, 40, 80, 2000, 10], ['m', 50, 10, 50, 60, 2000, 10], ['m', 50, 20, 50, 70, 2000, 10], ['m', 50, 30, 50, 80, 2000, 10], ['m', 60, 10, 60, 60, 2000, 10], ['m', 60, 20, 60, 70, 2000, 10], ['m', 60, 30, 60, 80, 2000, 10], ['m', 60, 40, 60, 90, 2000, 10], ['m', 60, 0, 60, 50, 2000, 10], ['m', 70, 10, 70, 60, 2000, 10], ['m', 70, 20, 70, 70, 2000, 10], ['m', 70, 30, 70, 80, 2000, 10], ['m', 80, 20, 80, 70, 2000, 10]]
 ];
 
@@ -436,7 +447,13 @@ var initLevel = function(level, wonParam) {
   $("#quit-button").removeClass("hidden");
   levelStarted = false;
   if(wonParam) {
+    clearTimeout(fireworkTimeout);
+    clearTimeout(fireworkHideTimeout);
     clearTimeout(scoreHideTimeout);
+    if(currLevel > 0 && $(".end").length > 0) {
+      var fireworkOffset = $(".end").offset();
+      firework(fireworkOffset.left*100/window.innerWidth, fireworkOffset.top*100/window.innerHeight, 10);
+    }
     score += 250;
     for(i = 0; i < bonuses.length; i++) {
       score += bonuses[i][0];
@@ -459,6 +476,7 @@ var initLevel = function(level, wonParam) {
     $(".game-elem").remove();
 
     if(gm === "classic") {
+      clearTimeout(scoreHideTimeout);
       if(currLevel > highestLevel) {
         highestLevel = currLevel;
         if(highestLevel === 50) {
@@ -550,6 +568,8 @@ var generatePityBonus = function() {
 };
 
 var startLevel = function() {
+  clearTimeout(fireworkHideTimeout);
+  $(".firework").fadeOut(500, function() {$(this).remove();});
   $(".start").addClass("disabled");
   $("#quit-button").addClass("hidden");
   $(".moving-tile").removeClass('disabled');

@@ -271,24 +271,18 @@ body {
   position: absolute;
   height: 100vh;
   width: 100vw;
-  z-index: -1;
+  z-index: 9999999999999;
+  pointer-events: none;
 }
 
 .firework {
   height: 50px;
   width: 50px;
-  background-color: rgba(220, 220, 220, 1);
+  background-color: rgba(0, 0, 0, 0.04);
   position: absolute;
   opacity: 1;
-  transition: transform 0.5s, top 0.5s, left 0.5s;
-  -webkit-transition: transform 0.5s, top 0.5s, left 0.5s;
-}
-
-.firework.inactive {
-  left: 50% !important;
-  top: 10% !important;
-  opacity: 0 !important;
-  transform: rotate(0deg) !important;
+  transition: transform 0.5s, top 0.5s, left 0.5s, opacity 0.1s;
+  -webkit-transition: transform 0.5s, top 0.5s, left 0.5s, opacity 0.1s;
 }
 
 #message-outer.hidden, #end-outer.hidden, #intro-outer.hidden {

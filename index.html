@@ -3,6 +3,9 @@
 <head>
   <link href="style.css" type="text/css" rel="stylesheet">
   <link href="favicon.ico" type="image/x-icon" rel="icon">
+  <meta charset="utf-8">
+  <meta name="description" content="A game where all you have to really do is just go that way. Shouldn't be that hard.">
+  <meta name="keywords" content="just go that way,just,go,that,way,just go,that way,game,arrows,fun,games">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
   <script src="jquery.js"></script>
@@ -10,6 +13,9 @@
   <title>Just go that way</title>
 </head>
 <body>
+  <style id="fireworks-styling">
+    .firework.inactive { left: 50% !important; top: 10% !important; opacity: 0 !important; transform: rotate(0deg) !important; }
+  </style>
   <div id="everything-outer">
     <div id="options-outer" class="hidden">
       <div id="options">
@@ -23,8 +29,8 @@
         </form>
       </div>
     </div>
+    <div id="fireworks-background"></div>
     <div id="end-outer" class="hidden">
-      <div id="fireworks-background"></div>
       <div class="relative-full">
         <h1 id="win-title" class="intro-title"><span class="pretty pretty-title hidden">You won!</span></h1>
         <p id="final-score" class="intro-subtitle delay5 pretty pretty-title hidden">Final score: <strong></strong></p>
