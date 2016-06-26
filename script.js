@@ -21,7 +21,7 @@ var totalDeaths = 0;
 var bonusCount = 0;
 var levelCount = 0;
 var origTime, endTime;
-var gm = "classic"; //classic or random
+var gm = "classic"; //classic or endless
 var livesLeft = 3;
 var optionsHidden = true;
 var endlessHighscore = 0, classicHighscore = 0;
@@ -55,6 +55,9 @@ var finish = function(lossParam) {
   if(gm === "classic") {
     if(currLevel > highestLevel) {
       highestLevel = currLevel;
+      if(highestLevel === 50) {
+        highestLevel = 49;
+      }
       setCookie("highestLevel", highestLevel, 99999);
       $("input[name='starting-level']").attr("max", parseInt(highestLevel) + 1);
     }
@@ -180,7 +183,7 @@ failureHeaders = ["Whoops", "Nope", "Really?", "Come on", "Wow", "Seriously?", "
 failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just had to go that way.", "You should have gone that way.", "Why didn't you just go that way?", "All you had to do was go that way.", "All you had to do was go that way.", "Did you really not go that way?", "You need to go that way next time."];
 
 //shows the level. development only
-var hidePath = true;
+var hidePath = false;
 
 //chooses most recent level. for testing new levels.
 var chooseMostRecentLevel = false;
@@ -222,10 +225,20 @@ var levels = [
   [['t', 15], ['s', 0, 40, 10], ['r', 10, 10], ['d', 10, 10], ['r', 70, 10], ['e', 10], ['m', 0, 50, 100, 50, 1500]],
   [['t', 25], ['s', 0, 40, 10], ['r', 10, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['r', 12, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['r', 12, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['r', 12, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['e', 10], ['m', 20, 40, 80, 50, 1500, 10]],
   [['t', 3], ['s', 0, 0, 10], ['r', 50, 10], ['d', 50, 10], ['e', 10], ['m', 80, 80, 80, 50, 1000, 10]],
-  [['t', 4], ['s', 0, 0, 10], ['d', 30, 10], ['r', 30, 10], ['d', 20, 10], ['e', 10]],
+  [['t', 3], ['s', 0, 0, 10], ['d', 30, 10], ['r', 30, 10], ['d', 20, 10], ['e', 10]],
   [['t', 5], ['s', 0, 0, 10], ['d', 40, 10], ['r', 60, 10], ['d', 10, 10], ['e', 10], ['m', 40, 20, 40, 60, 2000, 10]],
   [['t', 1], ['s', 45, 0, 10], ['d', 50, 10], ['e', 10]],
   [['t', 1], ['s', 45, 0, 10], ['d', 50, 10], ['e', 10], ['m', 0, 30, 90, 30, 1000, 10]],
+  [['t', 20], ['s', 0, 30, 10], ['r', 80, 10], ['d', 11, 10], ['l', 90, 10], ['d', 11, 10], ['e', 10], ['m', 10, 41, 20, 30, 1000, 10], ['m', 30, 41, 40, 30, 1000, 10], ['m', 50, 41, 60, 30, 1000, 10]],
+  [['t', 10], ['s', 0, 45, 10], ['r', 90, 10], ['d', 20, 10], ['e', 10], ['m', 0, 0, 90, 90, 1000, 10], ['m', 40, 30, 40, 70, 2000, 10], ['m', 70, 30, 20, 90, 750]],
+  [['t', 10], ['s', 45, 0, 10], ['d', 90, 10], ['l', 20, 10], ['e', 10], ['m', 0, 30, 90, 30, 730, 10], ['m', 20, 40, 90, 30, 580, 10], ['m', 0, 70, 90, 30, 809, 10], ['m', 0, 80, 90, 30, 1000, 10]],
+  [['t', 20], ['s', 10, 0, 10], ['d', 10, 10], ['r', 70, 10], ['d', 70, 10], ['l', 80, 10], ['u', 65, 10], ['e', 10], ['m', 0, 10, 60, 10, 3000, 10], ['m', 80, 60, 80, 0, 3000, 10], ['m', 90, 80, 0, 80, 3000, 10]],
+  [['t', 30], ['s', 0, 0, 10], ['r', 50, 10], ['d', 30, 10], ['l', 60, 10], ['d', 30, 10], ['r', 60, 10], ['e', 10], ['m', 30, -10, 30, 0, 1000, 10], ['m', 30, 10, 30, 20, 1000, 10], ['m', 30, 20, 30, 30, 1000, 10], ['m', 30, 40, 30, 50, 1000, 10], ['m', 30, 50, 30, 60, 1000, 10], ['m', 30, 70, 30, 80, 1000, 10], ['m', 30, 80, 30, 90, 1000, 10]],
+  [['t', 20], ['s', 80, 0, 10], ['d', 80, 10], ['l', 50, 10], ['u', 75, 10], ['e', 10], ['m', 80, 40, 40, 50, 1000, 10], ['m', 80, 50, 40, 60, 1000, 10], ['m', 80, 60, 40, 70, 1000, 10], ['m', 80, 70, 40, 80, 1000, 10]],
+  [['t', 5], ['s', 45, 0, 10], ['d', 90, 10], ['r', 20, 10], ['e', 10], ['m', 35, 10, 55, 90, 1500, 10]],
+  [['t', 30], ['s', 39, 0, 10], ['d', 90, 10], ['r', 12, 10], ['u', 90, 10], ['e', 10], ['m', 34, 10, 34, 70, 4000, 10], ['m', 45, 70, 45, 10, 4000, 10], ['m', 56, 10, 56, 70, 4000, 10]],
+  [['t', 3], ['s', 0, 45, 10], ['r', 70, 10], ['d', 20, 10], ['e', 10], ['m', 0, 0, 90, 90, 500, 10], ['m', 30, 45, 60, 10, 657, 10], ['m', 70, 80, 20, 10, 800, 10]],
+  [['t', 4], ['s', 0, 0, 10], ['r', 80, 10], ['d', 60, 10], ['l', 40, 10], ['d', 20, 10], ['e', 10], ['m', 90, 0, 50, 90, 1000, 10]],
   [['t', 50], ['s', 0, 45, 10], ['r', 50, 10], ['e', 10], ['m', 20, 10, 20, 60, 2000, 10], ['m', 20, 20, 20, 70, 2000, 10], ['m', 20, 30, 20, 80, 2000, 10], ['m', 30, 10, 30, 60, 2000, 10], ['m', 30, 20, 30, 70, 2000, 10], ['m', 30, 30, 30, 80, 2000, 10], ['m', 40, 10, 40, 60, 2000, 10], ['m', 40, 20, 40, 70, 2000, 10], ['m', 40, 30, 40, 80, 2000, 10], ['m', 50, 10, 50, 60, 2000, 10], ['m', 50, 20, 50, 70, 2000, 10], ['m', 50, 30, 50, 80, 2000, 10], ['m', 60, 10, 60, 60, 2000, 10], ['m', 60, 20, 60, 70, 2000, 10], ['m', 60, 30, 60, 80, 2000, 10], ['m', 60, 40, 60, 90, 2000, 10], ['m', 60, 0, 60, 50, 2000, 10], ['m', 70, 10, 70, 60, 2000, 10], ['m', 70, 20, 70, 70, 2000, 10], ['m', 70, 30, 70, 80, 2000, 10], ['m', 80, 20, 80, 70, 2000, 10]]
 ];
 
@@ -423,14 +436,15 @@ var initLevel = function(level, wonParam) {
   $("#quit-button").removeClass("hidden");
   levelStarted = false;
   if(wonParam) {
+    clearTimeout(scoreHideTimeout);
     score += 250;
     for(i = 0; i < bonuses.length; i++) {
       score += bonuses[i][0];
     }
     $("#score").html("score <strong>"+score+"</strong>");
     setTimeout(function() {
-      $("#score-outer > *").removeClass("hidden");
       clearTimeout(scoreHideTimeout);
+      $("#score-outer > *").removeClass("hidden");
       scoreHideTimeout = setTimeout(function() {
         $("#score-outer > *:not(#score)").addClass("hidden");
         setTimeout(function() {
@@ -445,6 +459,18 @@ var initLevel = function(level, wonParam) {
     $(".game-elem").remove();
 
     if(gm === "classic") {
+      if(currLevel > highestLevel) {
+        highestLevel = currLevel;
+        if(highestLevel === 50) {
+          highestLevel = 49;
+        }
+        setCookie("highestLevel", highestLevel, 99999);
+      }
+      if(score > parseInt(classicHighscore)) {
+        classicHighscore = score;
+        setCookie("classicHighscore", score, 99999);
+      }
+
       if(currLevel >= levels.length) {
         setTimeout(function() {finish();}, 2500);
       } else {
@@ -459,11 +485,16 @@ var initLevel = function(level, wonParam) {
         }
       }
     } else if(gm === "endless") {
+      clearTimeout(scoreHideTimeout);
+      if(score > parseInt(endlessHighscore)) {
+        endlessHighscore = score;
+        setCookie("endlessHighscore", score, 99999);
+      }
       var amtOfLevels = Math.floor(-((Math.pow(10, 20/(currLevel+20))))+11) + 1;
       var baseTime = Math.ceil(4*amtOfLevels);
-      console.log("basetime: "+baseTime);
-      var timeMultiplier = 8*(Math.pow(6*Math.E, (-0.1*(currLevel+5)))) + 1;
-      console.log("multiplier: "+timeMultiplier);
+      // console.log("basetime: "+baseTime);
+      var timeMultiplier = 4*(Math.pow(6*Math.E, (-0.1*(currLevel+5)))) + 1;
+      // console.log("multiplier: "+timeMultiplier);
       var rl = [['t', Math.ceil(baseTime*timeMultiplier)], ['s', Math.floor(Math.random()*90), Math.floor(Math.random()*90), 10]];
       for(i = 0; i < rl.length; i++) {
         createElem(rl[i], i);
@@ -689,6 +720,9 @@ $(document).ready(function() {
   } else {
     highestLevel = getCookie("highestLevel");
   }
+  if(highestLevel === 50) {
+    highestLevel = 49;
+  }
   $("input[name='starting-level']").attr("max", parseInt(highestLevel) + 1);
 
   $("#classic-highscore").html(classicHighscore);
@@ -707,14 +741,21 @@ $(document).ready(function() {
     }
   });
   $("input[name='starting-level']").change(function() {
-    if(parseInt($(this).val()) >= 1 && parseInt($(this).val()) <= (highestLevel + 1) && gm === "classic") {
+    if(highestLevel === 50) {
+      highestLevel = 49;
+    }
+    if(parseInt($(this).val()) >= 1 && parseInt($(this).val()) <= (highestLevel + 1)) {
       $(this).removeClass("invalid");
       startingLevel = parseInt($(this).val()) - 1;
-      $("#intro-button").html("start<br><span class='start-sub'>classic, level "+(startingLevel+1)+"</span>");
+      if(gm === "classic") {
+        $("#intro-button").html("start<br><span class='start-sub'>classic, level "+(startingLevel+1)+"</span>");
+      }
     } else {
       $(this).addClass("invalid");
       startingLevel = 0;
-      $("#intro-button").html("start<br><span class='start-sub'>classic, level "+(startingLevel+1)+"</span>");
+      if(gm === "classic") {
+        $("#intro-button").html("start<br><span class='start-sub'>classic, level "+(startingLevel+1)+"</span>");
+      }
     }
   });
   if(mobileCheck()) {
@@ -731,5 +772,12 @@ $(document).ready(function() {
 $(document).on("mousemove", function(e) {
   mx = e.pageX;
   my = e.pageY;
+  bounding = $("#mouse-message-outer")[0].getBoundingClientRect();
+  if(my >= window.innerHeight - $("#mouse-message-outer").height() - 25) {
+    my = window.innerHeight - $("#mouse-message-outer").height() - 25;
+  }
+  if(mx >= window.innerWidth - $("#mouse-message-outer").width() - 25) {
+    mx = window.innerWidth - $("#mouse-message-outer").width() - 25;
+  }
   $("#mouse-message-outer").css({left: mx, top: my});
 });

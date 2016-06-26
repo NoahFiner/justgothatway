@@ -14,12 +14,12 @@
     <div id="options-outer" class="hidden">
       <div id="options">
         <h1>options</h1>
-        <hr>
-        <p id="classic" class="gamemode-option selected"><strong style='font-size: 30px'>classic</strong><br>Work through 40 levels with infinite lives for the highest score and lowest time.<br><span style="font-size: 12px">highscore <strong id="classic-highscore">1234</strong></span></p>
+        <hr style="margin-top: 10px">
+        <p id="classic" class="gamemode-option selected"><strong style='font-size: 30px'>classic</strong><br>Work through 50 levels with infinite lives for the highest score and lowest time.<br><span style="font-size: 12px">highscore <strong id="classic-highscore">1234</strong></span></p>
         <p id="endless" class="gamemode-option"><strong style='font-size: 30px'>endless</strong><br>Play as many randomly generated levels as you can with three lives.<br><span style="font-size: 12px">highscore <strong id="endless-highscore">4321</strong></span></p>
         <hr>
         <form id="starting-level">
-          Start at level <input type="number" name="starting-level" value="1" min="1" max="40"></input> in classic.
+          Start at level <input type="number" name="starting-level" value="1" min="1" max="50"></input> in classic.
         </form>
       </div>
     </div>
@@ -52,7 +52,7 @@
           <span class="pretty pretty-title delay3 hidden">way</span>
         </h1>
         <p class="intro-subtitle pretty pretty-title hidden">It shouldn't be that hard.</p>
-        <p id="intro-info" class="pretty pretty-invert-intro hidden">This game uses CSS3 cursors and does not work on mobile and older browsers.<br><br>If your cursor isn't an arrow when hovering over <strong style="cursor: e-resize">here</strong>, you can't play.</p>
+        <p id="intro-info" class="pretty pretty-invert-intro hidden">This game uses CSS3 cursors and does not work on mobile and older browsers.<br><br>If your cursor isn't an arrow when hovering over <strong style="cursor: e-resize">here</strong>, you can't play.<br><br>Keep in mind that Chrome and Safari's cursor arrows look better than Firefox's.</p>
         <p id="gamemode-button" class="button pretty pretty-invert-intro delay5 hidden" onclick="setOptionState(false);">settings</p>
         <p id="intro-button" class="button pretty pretty-invert-intro hidden" onclick="startGame()">start<br><span class="start-sub">classic</span></p>
       </div>
