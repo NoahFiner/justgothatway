@@ -2,7 +2,7 @@ var mx = 0; // mouse x
 var my = 0; // mouse y
 var wh = window.innerHeight;
 var ww = window.innerWidth;
-var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval, introCirclesInterval, scoreHideTimeout, fireworkTimeout, fireworkHideTimeout;
+var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval, introCirclesInterval, scoreHideTimeout, fireworkTimeout, fireworkHideTimeout, bonusResetTimeout;
 var levelStarted = false;
 var currLevel = 0;
 var timeLeft = 0;
@@ -466,9 +466,11 @@ var initLevel = function(level, wonParam) {
     setTimeout(function() {
       clearTimeout(scoreHideTimeout);
       $("#score-outer > *").removeClass("hidden");
+      clearTimeout(scoreHideTimeout);
       scoreHideTimeout = setTimeout(function() {
         $("#score-outer > *:not(#score)").addClass("hidden");
-        setTimeout(function() {
+        clearTimeout(bonusResetTimeout);
+        bonusResetTimeout = setTimeout(function() {
           resetBonuses();
         }, 1000);
       }, 5000);
