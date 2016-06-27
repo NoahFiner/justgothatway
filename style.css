@@ -378,7 +378,14 @@ body {
   bottom: 30px;
   left: 30px;
   height: 15px;
+  max-width: 80vw;
   width: auto;
+}
+
+@media screen and (max-width:820px) {
+  #score-outer {
+    bottom: 40px;
+  }
 }
 
 #score-outer > * {
@@ -461,7 +468,8 @@ body {
   border: none;
 }
 
-#starting-level {
+#starting-level, #difficulty {
+  position: absolute;
   font-size: 20px;
   margin: 10px 10%;
 }
@@ -478,18 +486,46 @@ input[type='number'] {
   font-size: 20px;
   font-weight: 900;
   background-color: transparent;
-  border-bottom: 4px solid rgba(230, 230, 230, 1);
+  border-bottom: 4px solid rgba(220, 220, 220, 1);
   transition: all 0.25s;
   -webkit-transition: all 0.25s;
 }
 
+select {
+  cursor: pointer;
+  border-radius: 0px;
+  border: 0;
+  border-bottom: 4px solid rgb(220, 220, 220);
+  background-color: white;
+  width: auto;
+  font-family: "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+  font-weight: 900;
+  padding: 5px 35px 5px 5px;
+  font-size: 16px;
+  height: auto;
+  outline: none !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url("arrow.png") 96% / 15% no-repeat;
+  transition: background-color 0.25s;
+  -webkit-transition: background-color 0.25s;
+}
+
+select:hover {
+  background-color: rgba(240, 240, 240, 1);
+}
+
+select:focus {
+  outline: none !important;
+}
+
 input[type='number']:focus {
   background-color: rgba(240, 240, 240, 1);
-  border-bottom: 4px solid rgba(200, 200, 200, 1);
 }
 
 input[type='number'].invalid {
-  background-color: rgba(255, 240, 240, 1);
+  background-color: rgba(255, 230, 230, 1);
 }
 
 .gamemode-option {

@@ -28,6 +28,7 @@ var endlessHighscore = 0, classicHighscore = 0;
 var startingLevel = 0;
 var highestLevel = 0;
 var lastEndCoords = [0, 0];
+var difficulty = "normal";
 
 function mobileCheck() {
  if (navigator.userAgent.match(/Android/i) ||
@@ -515,16 +516,32 @@ var initLevel = function(level, wonParam) {
         setCookie("endlessHighscore", score, 99999);
       }
       var amtOfLevels = Math.floor(-((Math.pow(10, 20/(currLevel+20))))+11) + 1;
-      var baseTime = Math.ceil(2*amtOfLevels);
+      var baseTime, timeMultiplier;
+      switch(difficulty) {
+        case "normal":
+          baseTime = Math.ceil(2*amtOfLevels);
+          timeMultiplier = 8*(Math.pow(6*Math.E, (-0.1*(currLevel+5)))) + 1;
+          break;
+        case "hard":
+          baseTime = Math.ceil(1.75*amtOfLevels);
+          timeMultiplier = 4*(Math.pow(6*Math.E, (-0.1*(currLevel+5)))) + 1;
+          break;
+        case "ridiculous":
+          baseTime = Math.ceil(1.5*amtOfLevels);
+          timeMultiplier = 2*(Math.pow(6*Math.E, (-0.1*(currLevel+5)))) + 1;
+          break;
+        case "impossible":
+          baseTime = Math.ceil(1.25*amtOfLevels);
+          timeMultiplier = (Math.pow(6*Math.E, (-0.1*(currLevel+5)))) + 1;
+          break;
+      }
       // console.log("basetime: "+baseTime);
-      var timeMultiplier = 8*(Math.pow(6*Math.E, (-0.1*(currLevel+5)))) + 1;
       // console.log("multiplier: "+timeMultiplier);
       var validStartCoords = [Math.floor(Math.random()*90), Math.floor(Math.random()*90)];
       while((validStartCoords[0] > lastEndCoords[0] - 10) &&
             (validStartCoords[0] < lastEndCoords[0] + 10) &&
             (validStartCoords[1] > lastEndCoords[1] - 10) &&
             (validStartCoords[1] < lastEndCoords[1] + 10)) {
-        console.log("start overlaps previous end");
         validStartCoords = [Math.floor(Math.random()*90), Math.floor(Math.random()*90)];
       }
       var rl = [['t', Math.ceil(baseTime*timeMultiplier)], ['s', validStartCoords[0], validStartCoords[1], 10]];
@@ -637,6 +654,19 @@ var startLevel = function() {
       if(((currLevel + 1) % 10) === 0) {
         addBonus(50, "level "+(currLevel+1));
       }
+      if(gm === "endless" && difficulty != "normal") {
+        switch(difficulty) {
+          case "hard":
+            addBonus(25, "difficulty bonus");
+            break;
+          case "ridiculous":
+            addBonus(50, "difficulty bonus");
+            break;
+          case "impossible":
+            addBonus(100, "difficulty bonus");
+            break;
+        }
+      }
       if(timeAllowed - timeLeft <= 3) {
         addBonus(35, "under 3s");
       }
@@ -709,7 +739,7 @@ var startGame = function() {
   $("#intro-outer").addClass("hidden");
   setTimeout(function() {
     $(".start").removeClass("disabled");
-    $(".intro-title > span, .intro-subtitle, #intro-info, #gamemode-info #intro-button, #gamemode-button, #stats > li, #stats").addClass("hidden");
+    $(".intro-title > span, .intro-subtitle, #intro-button, #intro-info, #gamemode-info #intro-button, #gamemode-button, #stats > li, #stats").addClass("hidden");
   }, 1000);
 };
 
@@ -717,9 +747,17 @@ var gamemodes = [["classic", "Work through "+levels.length+" levels with infinit
 var setGamemode = function(gamemode) {
   gm = gamemode;
   if(gm === "classic") {
+    $("#starting-level").removeClass("hidden delay3");
+    $("#difficulty").addClass("hidden delay3");
+    $("#starting-level").addClass("delay3");
+    $("#difficulty").removeClass("delay3");
     $("#intro-button").html("start<br><span class='start-sub'>"+gm+", level "+(startingLevel+1)+"</span>");
   } else {
-    $("#intro-button").html("start<br><span class='start-sub'>"+gm+"</span>");
+    $("#starting-level").addClass("hidden");
+    $("#difficulty").removeClass("hidden");
+    $("#starting-level").removeClass("delay3");
+    $("#difficulty").addClass("delay3");
+    $("#intro-button").html("start<br><span class='start-sub'>"+gm+", "+difficulty+"</span>");
   }
 };
 
@@ -794,6 +832,11 @@ $(document).ready(function() {
       }
     }
   });
+  $("#difficulty-select").change(function() {
+    difficulty = $("#difficulty-select option:selected").text();
+    $("#intro-button").html("start<br><span class='start-sub'>"+gm+", "+difficulty+"</span>");
+  });
+
   if(mobileCheck()) {
     errorMessage("This game doesn't work on mobile.", "Just go that way uses CSS3 cursors which, obviously, aren't available on touchscreens.");
   }

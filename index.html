@@ -24,9 +24,21 @@
         <p id="classic" class="gamemode-option selected"><strong style='font-size: 30px'>classic</strong><br>Work through 50 levels with infinite lives for the highest score and lowest time.<br><span style="font-size: 12px">highscore <strong id="classic-highscore">1234</strong></span></p>
         <p id="endless" class="gamemode-option"><strong style='font-size: 30px'>endless</strong><br>Play as many randomly generated levels as you can with three lives.<br><span style="font-size: 12px">highscore <strong id="endless-highscore">4321</strong></span></p>
         <hr>
-        <form id="starting-level">
-          Start at level <input type="number" name="starting-level" value="1" min="1" max="50"></input> in classic.
-        </form>
+        <div>
+          <form id="starting-level" class="pretty delay3">
+            Start at level <input type="number" name="starting-level" value="1" min="1" max="50"></input> in classic.
+          </form>
+          <form id="difficulty" class="pretty delay3 hidden">
+            Play endless on
+            <select id="difficulty-select">
+              <option value="normal" selected>normal</option>
+              <option value="hard">hard</option>
+              <option value="ridiculous">ridiculous</option>
+              <option value="impossible">impossible</option>
+            </select>
+             difficulty.
+          </form>
+        </div>
       </div>
     </div>
     <div id="fireworks-background"></div>
