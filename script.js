@@ -194,7 +194,7 @@ successInfos = ["That wasn't supposed to be hard, though.", "You could have done
 
 //failure messages
 failureHeaders = ["Whoops", "Nope", "Really?", "Come on", "Wow", "Seriously?", "Nah"];
-failureInfos = ["Looks like you didn't just go that way.", "Honestly you just had to go that way.", "You should have just gone that way.", "Why didn't you just go that way?", "All you had to do was just go that way.", "You just had to go that way.", "Did you really not just go that way?", "You need to just go that way."];
+failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just had to go that way.", "You should have just gone that way.", "Why didn't you just go that way?", "All you had to do was go that way.", "You just had to go that way.", "Did you really not just go that way?", "Even your grandparents could have just gone that way."];
 
 //shows the level. development only
 var hidePath = true;
