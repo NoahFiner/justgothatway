@@ -226,6 +226,7 @@ body {
   position: absolute;
   width: 100vw;
   height: 30px;
+  z-index: 10000;
 }
 
 #timer-inner {
