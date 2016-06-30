@@ -224,6 +224,7 @@ body {
 
 #timer-outer {
   position: absolute;
+  pointer-events: none;
   width: 100vw;
   height: 30px;
   z-index: 10000;
@@ -232,7 +233,7 @@ body {
 #timer-inner {
   float: left;
   height: 30px;
-  background-color: rgba(225, 225, 225, 1);
+  background-color: rgba(0, 0, 0, 0.12);
   width: 0%;
   overflow: hidden;
   transition: width 1s, background-color 0.25s;
