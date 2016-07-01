@@ -2,7 +2,7 @@ var mx = 0; // mouse x
 var my = 0; // mouse y
 var wh = window.innerHeight;
 var ww = window.innerWidth;
-var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval, introCirclesInterval, scoreHideTimeout, fireworkTimeout, fireworkHideTimeout, bonusResetTimeout;
+var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval, introCirclesInterval, scoreHideTimeout, fireworkTimeout, fireworkHideTimeout, bonusResetTimeout, hoverCheckInterval;
 var levelStarted = false;
 var currLevel = 0;
 var timeLeft = 0;
@@ -98,7 +98,8 @@ var finish = function(lossParam) {
     $("#stats > li, #stats").removeClass("hidden");
     $("#score-outer > *").addClass("hidden");
   }, 3500);
-  clearTimeout(timerInterval);
+  clearInterval(timerInterval);
+  clearInterval(hoverCheckInterval);
 };
 
 var firework = function(x, y, amt) {
@@ -441,8 +442,9 @@ var initLevel = function(level, wonParam) {
   }
 
   var won = wonParam || 0;
-  clearTimeout(timerInterval);
+  clearInterval(timerInterval);
   clearTimeout(scoreHideTimeout);
+  clearInterval(hoverCheckInterval)
   timeLeft = timeAllowed;
   $("#timer-inner").css("width", "0%");
   $("#timer").addClass("hidden");
@@ -601,22 +603,7 @@ var generatePityBonus = function() {
 };
 
 var startLevel = function() {
-  clearTimeout(fireworkHideTimeout);
-  $(".firework").fadeOut(500, function() {$(this).remove();});
-  $(".start").addClass("disabled");
-  $("#quit-button").addClass("hidden");
-  $(".moving-tile").removeClass('disabled');
-  $(".game-elem:not(.end)").removeClass("hide-pointers");
-  levelStarted = true;
-  $("#timer").removeClass("hidden");
-  $("#score-outer > *").addClass("hidden");
-  $("#timer").html(timeAllowed);
-  $("#timer-inner").css("width", "100%");
-  timerInterval = setInterval(function() {
-    updateTimer();
-  }, 1000);
-  $("#hover-lose, .moving-tile").mouseenter(function() { //lose
-    //quick problem: if the user doesn't move the mouse they don't lose
+  function lose() {
     if(levelStarted) {
       perfectRound = false;
       totalDeaths++;
@@ -631,6 +618,41 @@ var startLevel = function() {
         initLevel([]);
       }
     }
+  }
+
+  function hoveringMTs() {
+    for(i = 0; i < movingTiles.length; i++) {
+      var node = "#mt"+i;
+      var p = $(node).offset();
+      if (mx >= p.left && mx <= p.left + $(node).width() &&
+          my >= p.top && my <= p.top + $(node).height()) {
+        return true;
+      }
+    }
+    return false;
+  }
+  clearTimeout(fireworkHideTimeout);
+  $(".firework").fadeOut(500, function() {$(this).remove();});
+  $(".start").addClass("disabled");
+  $("#quit-button").addClass("hidden");
+  $(".moving-tile").removeClass('disabled');
+  $(".game-elem:not(.end)").removeClass("hide-pointers");
+  levelStarted = true;
+  $("#timer").removeClass("hidden");
+  $("#score-outer > *").addClass("hidden");
+  $("#timer").html(timeAllowed);
+  $("#timer-inner").css("width", "100%");
+  hoverCheckInterval = setInterval(function() {
+    if(hoveringMTs()) {
+      lose();
+    }
+  }, 150);
+  timerInterval = setInterval(function() {
+    updateTimer();
+  }, 1000);
+  $("#hover-lose, .moving-tile").mouseenter(function() { //lose
+    //quick problem: if the user doesn't move the mouse they don't lose
+    lose();
   });
 
   //in random levels, the end might cross over a path
