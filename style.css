@@ -189,22 +189,22 @@ body {
 
 .game-elem.left {
   background-color: blue;
-  cursor: w-resize !important;
+  cursor: url('arr-w.png') 16 16, w-resize !important;
 }
 
 .game-elem.right {
   background-color: purple;
-  cursor: e-resize !important;
+  cursor: url('arr-e.png') 16 16, e-resize !important;
 }
 
 .game-elem.up {
   background-color: orange;
-  cursor: n-resize !important;
+  cursor: url('arr-n.png') 16 16, n-resize !important;
 }
 
 .game-elem.down {
   background-color: pink;
-  cursor: s-resize !important;
+  cursor: url('arr-s.png') 16 16, s-resize !important;
 }
 
 .game-elem.hidden:not(.start):not(.moving-tile) {
