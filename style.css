@@ -67,6 +67,10 @@ body {
   -webkit-transition: transform 0.25s;
 }
 
+.start {
+  pointer-events: auto;
+}
+
 @keyframes entice {
   0% {transform: scale(1);}
   50% {transform: scale(1.05);}
@@ -75,6 +79,7 @@ body {
 
 .start.disabled, .circle.disabled, .moving-tile.disabled {
   transform: scale(0);
+  pointer-events: none;
   animation: none;
   -webkit-animation: none;
 }
@@ -147,6 +152,13 @@ body {
 
 
 /*game elements*/
+
+.text {
+  position: absolute;
+  font-weight: 100;
+  font-size: 25px;
+  height: auto;
+}
 
 #game-outer {
   position: absolute;
@@ -514,7 +526,7 @@ select {
   -webkit-transition: background-color 0.25s;
 }
 
-select:hover {
+select:hover, select:focus {
   background-color: rgba(240, 240, 240, 1);
 }
 
@@ -522,7 +534,7 @@ select:focus {
   outline: none !important;
 }
 
-input[type='number']:focus {
+input[type='number']:hover, input[type='number']:focus {
   background-color: rgba(240, 240, 240, 1);
 }
 

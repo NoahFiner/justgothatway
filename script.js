@@ -2,7 +2,7 @@ var mx = 0; // mouse x
 var my = 0; // mouse y
 var wh = window.innerHeight;
 var ww = window.innerWidth;
-var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval, introCirclesInterval, scoreHideTimeout, fireworkTimeout, fireworkHideTimeout, bonusResetTimeout, hoverCheckInterval;
+var mouseMessageFadeTimeout, mouseMessageStartTimeout, timerInterval, introCirclesInterval, scoreHideTimeout, fireworkTimeout, fireworkHideTimeout, bonusResetTimeout, hoverCheckInterval, textHideTimeout;
 var levelStarted = false;
 var currLevel = 0;
 var timeLeft = 0;
@@ -11,6 +11,7 @@ var drawY = 0;
 var timeLeft = 1;
 var timeAllowed = 1;
 var movingTiles = [];
+var texts = [];
 var score = -250;
 var bonuses = [];
 var perfectRound = true;
@@ -205,10 +206,10 @@ var chooseMostRecentLevel = false;
 
 //t = time
 var levels = [
-  [['t', 15], ['s', 10, 45, 10], ['r', 80, 10], ['e', 10]],
-  [['t', 15], ['s', 10, 80, 10], ['u', 50, 10], ['r', 50, 10], ['e', 10]],
-  [['t', 15], ['s', 40, 80, 10], ['u', 40, 10], ['r', 15, 10], ['d', 30, 10], ['e', 10]],
-  [['t', 15], ['s', 20, 80, 10], ['r', 40, 10], ['u', 20, 10], ['r', 20, 10], ['u', 20, 10], ['e', 10]],
+  [['t', 15], ['s', 10, 45, 10], ['r', 80, 10], ['e', 10], ['i', 60, 30, "Move your mouse right."]],
+  [['t', 15], ['s', 10, 80, 10], ['u', 50, 10], ['r', 50, 10], ['e', 10], ['i', 50, 70, "Move your mouse up."], ['i', 50, 30, "Now move right."]],
+  [['t', 15], ['s', 40, 80, 10], ['u', 40, 10], ['r', 15, 10], ['d', 30, 10], ['e', 10], ['i', 10, 70, 'Go up.'], ['i', 40, 60, 'Now right.'], ['i', 20, 60, 'You can figure this<br>one out yourself.']],
+  [['t', 15], ['s', 20, 80, 10], ['r', 40, 10], ['u', 20, 10], ['r', 20, 10], ['u', 20, 10], ['e', 10], ['i', 10, 50, "Hey, you're pretty good at just going that way.<br>You're on your own now."]],
   [['t', 20], ['s', 10, 10, 10], ['r', 40, 10], ['d', 50, 10], ['l', 20, 10], ['u', 30, 10], ['l', 50, 10], ['e', 10]],
   [['t', 30], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10]],
   [['t', 15], ['s', 80, 45, 10], ['l', 80, 10], ['e', 10], ['m', 30, 20, 30, 60, 1000, 10]],
@@ -239,7 +240,7 @@ var levels = [
   [['t', 30], ['s', 10, 30, 10], ['r', 70, 10], ['d', 12, 10], ['l', 80, 10], ['e', 10], ['m', 20, 30, 20, 42, 1500, 10], ['m', 30, 42, 30, 30, 1500, 10], ['m', 40, 30, 40, 42, 1500, 10], ['m', 50, 42, 50, 30, 1500, 10], ['m', 60, 30, 60, 42, 1500, 10]],
   [['t', 15], ['s', 0, 40, 10], ['r', 10, 10], ['d', 10, 10], ['r', 70, 10], ['e', 10], ['m', 0, 50, 100, 50, 1500]],
   [['t', 25], ['s', 0, 40, 10], ['r', 10, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['r', 12, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['r', 12, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['r', 12, 10], ['d', 10, 10], ['r', 12, 10], ['u', 20, 10], ['e', 10], ['m', 20, 40, 80, 50, 1500, 10]],
-  [['t', 3], ['s', 0, 0, 10], ['r', 50, 10], ['d', 50, 10], ['e', 10], ['m', 80, 80, 80, 50, 1000, 10]],
+  [['t', 3], ['s', 0, 0, 10], ['r', 50, 10], ['d', 50, 10], ['e', 10]],
   [['t', 3], ['s', 0, 0, 10], ['d', 30, 10], ['r', 30, 10], ['d', 20, 10], ['e', 10]],
   [['t', 5], ['s', 0, 0, 10], ['d', 40, 10], ['r', 60, 10], ['d', 10, 10], ['e', 10], ['m', 40, 20, 40, 60, 2000, 10]],
   [['t', 1], ['s', 45, 0, 10], ['d', 50, 10], ['e', 10]],
@@ -250,8 +251,8 @@ var levels = [
   [['t', 20], ['s', 10, 0, 10], ['d', 10, 10], ['r', 70, 10], ['d', 70, 10], ['l', 80, 10], ['u', 65, 10], ['e', 10], ['m', 0, 10, 60, 10, 3000, 10], ['m', 80, 60, 80, 0, 3000, 10], ['m', 90, 80, 0, 80, 3000, 10]],
   [['t', 30], ['s', 0, 0, 10], ['r', 50, 10], ['d', 30, 10], ['l', 60, 10], ['d', 30, 10], ['r', 60, 10], ['e', 10], ['m', 30, -10, 30, 0, 1000, 10], ['m', 30, 10, 30, 20, 1000, 10], ['m', 30, 20, 30, 30, 1000, 10], ['m', 30, 40, 30, 50, 1000, 10], ['m', 30, 50, 30, 60, 1000, 10], ['m', 30, 70, 30, 80, 1000, 10], ['m', 30, 80, 30, 90, 1000, 10]],
   [['t', 20], ['s', 80, 0, 10], ['d', 80, 10], ['l', 50, 10], ['u', 75, 10], ['e', 10], ['m', 80, 40, 40, 50, 1000, 10], ['m', 80, 50, 40, 60, 1000, 10], ['m', 80, 60, 40, 70, 1000, 10]],
-  [['t', 5], ['s', 45, 0, 10], ['d', 90, 10], ['r', 20, 10], ['e', 10], ['m', 35, 10, 55, 90, 1500, 10]],
-  [['t', 30], ['s', 39, 0, 10], ['d', 90, 10], ['r', 12, 10], ['u', 90, 10], ['e', 10], ['m', 34, 10, 34, 70, 4000, 10], ['m', 45, 70, 45, 10, 4000, 10], ['m', 56, 10, 56, 70, 4000, 10]],
+  [['t', 5], ['s', 45, 0, 10], ['d', 90, 10], ['r', 20, 10], ['e', 10], ['m', 35, 10, 55, 90, 1000, 10]],
+  [['t', 30], ['s', 39, 0, 10], ['d', 90, 10], ['r', 12, 10], ['u', 90, 10], ['e', 10], ['m', 34, 10, 34, 70, 2000, 10], ['m', 45, 70, 45, 10, 2000, 10], ['m', 56, 10, 56, 70, 2000, 10]],
   [['t', 3], ['s', 0, 45, 10], ['r', 70, 10], ['d', 20, 10], ['e', 10], ['m', 0, 0, 90, 90, 500, 10], ['m', 30, 45, 60, 10, 657, 10], ['m', 70, 80, 20, 10, 800, 10]],
   [['t', 4], ['s', 0, 0, 10], ['r', 80, 10], ['d', 60, 10], ['l', 40, 10], ['e', 10], ['m', 90, 0, 50, 90, 1000, 10]],
   [['t', 50], ['s', 0, 45, 10], ['r', 50, 10], ['e', 10], ['m', 20, 10, 20, 60, 2000, 10], ['m', 20, 20, 20, 70, 2000, 10], ['m', 20, 30, 20, 80, 2000, 10], ['m', 30, 10, 30, 60, 2000, 10], ['m', 30, 20, 30, 70, 2000, 10], ['m', 30, 30, 30, 80, 2000, 10], ['m', 40, 10, 40, 60, 2000, 10], ['m', 40, 20, 40, 70, 2000, 10], ['m', 40, 30, 40, 80, 2000, 10], ['m', 50, 10, 50, 60, 2000, 10], ['m', 50, 20, 50, 70, 2000, 10], ['m', 50, 30, 50, 80, 2000, 10], ['m', 60, 10, 60, 60, 2000, 10], ['m', 60, 20, 60, 70, 2000, 10], ['m', 60, 30, 60, 80, 2000, 10], ['m', 60, 40, 60, 90, 2000, 10], ['m', 60, 0, 60, 50, 2000, 10], ['m', 70, 10, 70, 60, 2000, 10], ['m', 70, 20, 70, 70, 2000, 10], ['m', 70, 30, 70, 80, 2000, 10], ['m', 80, 20, 80, 70, 2000, 10]]
@@ -307,6 +308,32 @@ var resetBonuses = function() {
   $("#score-outer > *:not(#score)").remove();
 };
 
+var Text = function(num, x1, y1, text) {
+  this.num = num;
+  this.coords = [x1, y1];
+  this.text = text;
+  this.shown = false;
+  this.hide = function() {
+    $("#t"+this.num).addClass("hidden");
+  };
+  this.init = function() {
+    var that = this;
+    $("#game-outer").append("<h1 id=t"+this.num+" class='pretty hidden text' style='left: "+this.coords[0]+"%; top: "+this.coords[1]+"%;'>"+this.text+"</h1>");
+    $("#game-elem"+(this.num+2)).mouseenter(function() {
+      if(levelStarted) {
+        that.shown = true;
+        $("#t"+that.num).removeClass("hidden");
+      }
+    });
+    $("#game-elem"+(this.num+3)).mouseenter(function() {
+      if(levelStarted && that.shown) {
+        that.hide();
+      }
+    });
+  };
+  this.init();
+};
+
 var MovingTile = function(num, x1, y1, x2, y2, time, width) {
   this.num = num;
   this.coords = [[x1, y1], [x2, y2]];
@@ -334,7 +361,6 @@ var MovingTile = function(num, x1, y1, x2, y2, time, width) {
                               top: this.coords[coordState][1]+"%"}, time);
   };
   this.destroy = function() {
-    $("#mt"+this.num).remove();
     clearInterval(this.interval);
   };
 };
@@ -374,6 +400,9 @@ var createElem = function(a, num) {
       break;
     case 'm': //moving tile
       movingTiles.push(new MovingTile(movingTiles.length, a[1], a[2], a[3], a[4], a[5], a[6]));
+      break;
+    case 'i': //instructions
+      texts.push(new Text(texts.length, a[1], a[2], a[3], a[4]));
       break;
     default: //old system
       $("#game-outer").append("<div id='game-elem"+num+"' class='game-elem "+gameElemClasses[a[0]]+"' style='top: "+a[2]+"%; left: "+a[1]+"%; height: "+a[4]+"%; width: "+a[3]+"%'></div>");
@@ -444,10 +473,14 @@ var initLevel = function(level, wonParam) {
   var won = wonParam || 0;
   clearInterval(timerInterval);
   clearTimeout(scoreHideTimeout);
-  clearInterval(hoverCheckInterval)
+  clearInterval(hoverCheckInterval);
   timeLeft = timeAllowed;
   $("#timer-inner").css("width", "0%");
   $("#timer").addClass("hidden");
+  $(".text").addClass("hidden");
+  for(i = 0; i < texts.length; i++) {
+    texts[i].shown = false;
+  }
   $(".start").removeClass("disabled");
   if(currLevel != 50) {
     $("#quit-button").removeClass("hidden");
@@ -481,8 +514,21 @@ var initLevel = function(level, wonParam) {
     for(i = 0; i < movingTiles.length; i++) {
       movingTiles[i].destroy();
     }
+    $(".moving-tile").attr("id", "");
+    $(".moving-tile").addClass("old");
+    $(".old").addClass("hidden");
+    setTimeout(function() {
+      $(".old").remove();
+    }, 250);
     movingTiles = [];
-    $(".game-elem").remove();
+    $(".text").addClass("hidden");
+    $(".text").addClass("old-text");
+    clearTimeout(textHideTimeout);
+    textHideTimeout = setTimeout(function() {
+      $(".old-text").remove();
+    }, 250);
+    texts = [];
+    $(".game-elem:not(.old-text):not(.old)").remove();
 
     if(gm === "classic") {
       clearTimeout(scoreHideTimeout);
@@ -631,8 +677,12 @@ var startLevel = function() {
     }
     return false;
   }
+
   clearTimeout(fireworkHideTimeout);
   $(".firework").fadeOut(500, function() {$(this).remove();});
+
+  clearTimeout(textHideTimeout);
+  $(".old-text").remove();
   $(".start").addClass("disabled");
   $("#quit-button").addClass("hidden");
   $(".moving-tile").removeClass('disabled');
@@ -793,9 +843,18 @@ var setOptionState = function(hidden) {
 };
 
 $(document).ready(function() {
-  $(document).keypress(function(e) { //pressing enter reloads the page for some reason
-    if(e.which == 13) {
+  $(document).keydown(function(e) { //pressing enter reloads the page for some reason
+    if(e.keyCode === 13) { //enter
       e.preventDefault();
+      if($("input[name='starting-level']").is(":focus") && !($("#options-outer").hasClass("hidden"))) {
+        $("input[name='starting-level']").blur();
+        setOptionState(true);
+      }
+    }
+    if(e.keyCode === 27) { //esc
+      if(!($("#options-outer").hasClass("hidden"))) {
+        setOptionState(true);
+      }
     }
   });
 
