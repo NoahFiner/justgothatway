@@ -58,7 +58,7 @@
     <div id="message-outer" class="hidden">
       <div class="relative-full">
         <h1 class="intro-title"><span class="pretty pretty-title hidden">This game doesn't work on mobile.</span></h1>
-        <p class="intro-subtitle pretty pretty-title hidden">This game uses CSS3 cursors, which don't show up on phones.</p>
+        <p class="intro-subtitle pretty pretty-title hidden">This game uses CSS3 custom cursors, which don't show up on phones.</p>
       </div>
     </div>
     <div id="intro-outer">
@@ -70,7 +70,7 @@
           <span class="pretty pretty-title delay3 hidden">way</span>
         </h1>
         <p class="intro-subtitle pretty pretty-title hidden">It shouldn't be that hard.</p>
-        <p id="intro-info" class="pretty pretty-invert-intro hidden">This game uses CSS3 cursors and does not work on mobile and older browsers.<br><br>If your cursor isn't an arrow when hovering over <strong style="cursor: url('arr-e.png') 16 16, e-resize !important;">here</strong>, you can't play.<br><br>Keep in mind that Chrome and Safari's cursor arrows look better than Firefox's.</p>
+        <p id="intro-info" class="pretty pretty-invert-intro hidden">This game uses CSS3 custom cursors and does not work on mobile and older browsers.</p>
         <p id="gamemode-button" class="button pretty pretty-invert-intro delay5 hidden" onclick="setOptionState(false);">settings</p>
         <p id="intro-button" class="button pretty pretty-invert-intro hidden" onclick="startGame()">start<br><span class="start-sub">classic</span></p>
       </div>
@@ -94,6 +94,23 @@
       <div id="hover-lose"></div>
     </div>
   </div>
+  <script type="text/javascript">
+  <!--//--><![CDATA[//><!--
+    var images = new Array()
+    function preload() {
+      for (i = 0; i < preload.arguments.length; i++) {
+        images[i] = new Image()
+        images[i].src = preload.arguments[i]
+      }
+    }
+    preload(
+      "arr-n.png",
+      "arr-e.png",
+      "arr-w.png",
+      "arr-s.png"
+    )
+  //--><!]]>
+</script>
   <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
