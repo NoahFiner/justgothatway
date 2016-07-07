@@ -196,12 +196,12 @@ var introCircles = function() {
 };
 
 //success messages
-successHeaders = ["Good job!", "You did it!", "Great work!", "Excellent work!", "That was quick.", "You're good at going that way.", "Oh look, you did it.", "That was impressive..."];
-successInfos = ["That wasn't supposed to be hard, though.", "You could have done that much faster, though.", "Like you'll do better next time.", "The next level is much harder.", "It just gets harder from here.", "That was supposed to be easy, though.", "Your parents would be proud of you.", "It really took that long to win, though?", "At least that will be easy to improve on.", "You still have a lot of room for improvement, though."];
+successHeaders = ["Good job!", "You did it!", "Great work!", "Excellent work!", "That was quick.", "You're good at going that way.", "Oh look, you did it.", "That was impressive."];
+successInfos = ["That wasn't supposed to be hard, though.", "You could have done that much faster, though.", "Like you'll do better next time.", "The next level is much harder.", "It just gets harder from here.", "That was supposed to be easy, though.", "Your parents would be proud of you.", "It really took that long to win, though?", "At least that will be easy to improve on.", "You still have a lot of room for improvement, though.", "Could you have done that any slower, though?"];
 
 //failure messages
 failureHeaders = ["Whoops", "Nope", "Really?", "Come on", "Wow", "Seriously?", "Nah"];
-failureInfos = ["Looks like you didn't just go that way.", "Honestly, you just had to go that way.", "You should have just gone that way.", "Why didn't you just go that way?", "All you had to do was go that way.", "You just had to go that way.", "Did you really not just go that way?", "Even your grandparents could have just gone that way."];
+failureInfos = ["Looks like you didn't go that way.", "Honestly, you just had to go that way.", "You should have just gone that way.", "Why didn't you just go that way?", "All you had to do was go that way.", "You just had to go that way.", "Did you really not go that way?", "Even your grandparents could have just gone that way."];
 
 //shows the level. development only
 var hidePath = true;
@@ -216,7 +216,7 @@ var levels = [
   [['t', 15], ['s', 40, 80, 10], ['u', 40, 10], ['r', 15, 10], ['d', 30, 10], ['e', 10], ['i', 10, 70, 'Go up.'], ['i', 40, 60, 'Now right.'], ['i', 70, 60, 'You can figure this<br>one out yourself.']],
   [['t', 20], ['s', 10, 80, 10], ['r', 40, 10], ['u', 20, 10], ['r', 30, 10], ['u', 20, 10], ['l', 40, 10], ['e', 10], ['i', 10, 50, "Hey, you're pretty good at just going that way."], ['i', 0, 0, ""], ['i', 30, 30, "You're on your own now."], ['i', 0, 0, ""], ['i', 20, 50, "Oh yeah, also make sure you don't run out of time."]],
   [['t', 15], ['s', 10, 10, 10], ['r', 50, 10], ['d', 50, 10], ['l', 20, 10], ['u', 30, 10], ['l', 50, 10], ['e', 10]],
-  [['t', 25], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10], ['i', 0, 0, ""], ['i', 0, 0, ""], ['i', 0, 30, "By the way, if you get bored of the<br>classic gamemode, you can check<br>out endless in the main menu."], ['i', 0, 20, "Not like you will though.<br>You know what, just go on your merry way,<br>I'll leave you alone now."]],
+  [['t', 25], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10], ['i', 0, 0, ""], ['i', 0, 0, ""], ['i', 0, 30, "By the way, if you get bored of the<br>classic gamemode, you can check<br>out endless in the main menu."], ['i', 0, 50, "Not like you will, though."]],
   [['t', 15], ['s', 80, 45, 10], ['l', 80, 10], ['e', 10], ['m', 30, 20, 30, 60, 1000, 10]],
   [['t', 15], ['s', 10, 10, 10], ['r', 60, 10], ['d', 60, 10], ['e', 10], ['m', 40, 0, 90, 50, 3000, 10]],
   [['t', 25], ['s', 10, 80, 10], ['u', 70, 10], ['r', 30, 10], ['d', 10, 10], ['r', 30, 10], ['e', 10], ['m', 10, 70, 10, 0, 4000, 10], ['m', 40, 20, 0, 20, 4000, 10]],
