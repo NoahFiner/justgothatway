@@ -64,6 +64,9 @@ var finish = function(lossParam) {
       }
       setCookie("highestLevel", highestLevel, 99999);
       $("input[name='starting-level']").attr("max", parseInt(highestLevel) + 1);
+      if(highestLevel >= 4) {
+        $("#endless").removeClass("disabled");
+      }
     }
     if(score > parseInt(classicHighscore)) {
       classicHighscore = score;
@@ -208,10 +211,10 @@ var chooseMostRecentLevel = false;
 var levels = [
   [['t', 15], ['s', 10, 45, 10], ['r', 80, 10], ['e', 10], ['i', 60, 30, "Move your mouse right."]],
   [['t', 15], ['s', 10, 80, 10], ['u', 50, 10], ['r', 50, 10], ['e', 10], ['i', 50, 70, "Move your mouse up."], ['i', 50, 30, "Now move right."]],
-  [['t', 15], ['s', 40, 80, 10], ['u', 40, 10], ['r', 15, 10], ['d', 30, 10], ['e', 10], ['i', 10, 70, 'Go up.'], ['i', 40, 60, 'Now right.'], ['i', 20, 60, 'You can figure this<br>one out yourself.']],
-  [['t', 15], ['s', 20, 80, 10], ['r', 40, 10], ['u', 20, 10], ['r', 20, 10], ['u', 20, 10], ['e', 10], ['i', 10, 50, "Hey, you're pretty good at just going that way.<br>You're on your own now."]],
-  [['t', 20], ['s', 10, 10, 10], ['r', 40, 10], ['d', 50, 10], ['l', 20, 10], ['u', 30, 10], ['l', 50, 10], ['e', 10]],
-  [['t', 30], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10]],
+  [['t', 15], ['s', 40, 80, 10], ['u', 40, 10], ['r', 15, 10], ['d', 30, 10], ['e', 10], ['i', 10, 70, 'Go up.'], ['i', 40, 60, 'Now right.'], ['i', 70, 60, 'You can figure this<br>one out yourself.']],
+  [['t', 20], ['s', 10, 80, 10], ['r', 40, 10], ['u', 20, 10], ['r', 30, 10], ['u', 20, 10], ['l', 40, 10], ['e', 10], ['i', 10, 50, "Hey, you're pretty good at just going that way."], ['i', 0, 0, ""], ['i', 30, 30, "You're on your own now."], ['i', 0, 0, ""], ['i', 20, 50, "Oh yeah, also make sure you don't run out of time."]],
+  [['t', 15], ['s', 10, 10, 10], ['r', 50, 10], ['d', 50, 10], ['l', 20, 10], ['u', 30, 10], ['l', 50, 10], ['e', 10]],
+  [['t', 17], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10], ['i', 0, 0, ""], ['i', 0, 0, ""], ['i', 0, 30, "By the way, if you get bored of the<br>classic gamemode, you can check<br>out endless in the main menu."], ['i', 0, 20, "Not like you will though.<br>You know what, just go on your merry way,<br>I'll leave you alone now."]],
   [['t', 15], ['s', 80, 45, 10], ['l', 80, 10], ['e', 10], ['m', 30, 20, 30, 60, 1000, 10]],
   [['t', 15], ['s', 10, 10, 10], ['r', 60, 10], ['d', 60, 10], ['e', 10], ['m', 40, 0, 90, 50, 3000, 10]],
   [['t', 25], ['s', 10, 80, 10], ['u', 70, 10], ['r', 30, 10], ['d', 10, 10], ['r', 30, 10], ['e', 10], ['m', 10, 70, 10, 0, 4000, 10], ['m', 40, 20, 0, 20, 4000, 10]],
@@ -499,7 +502,9 @@ var initLevel = function(level, wonParam) {
       score += bonuses[i][0];
     }
     $("#score").html("score <strong>"+score+"</strong>");
+    clearTimeout(bonusResetTimeout);
     setTimeout(function() {
+      clearTimeout(bonusResetTimeout);
       clearTimeout(scoreHideTimeout);
       $("#score-outer > *").removeClass("hidden");
       clearTimeout(scoreHideTimeout);
@@ -538,6 +543,9 @@ var initLevel = function(level, wonParam) {
           highestLevel = 49;
         }
         setCookie("highestLevel", highestLevel, 99999);
+        if(highestLevel >= 4) {
+          $("#endless").removeClass("disabled");
+        }
       }
       if(score > parseInt(classicHighscore)) {
         classicHighscore = score;
@@ -882,6 +890,9 @@ $(document).ready(function() {
 
   $("#classic-highscore").html(classicHighscore);
   $("#endless-highscore").html(endlessHighscore);
+  if(highestLevel >= 4) {
+    $("#endless").removeClass("disabled");
+  }
 
   $("#gamemode-info").html("<strong style='font-size: 35px'>"+gamemodes[0][0]+"</strong><br>"+gamemodes[0][1]);
   $(".gamemode-option").click(function() {

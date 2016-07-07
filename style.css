@@ -550,8 +550,15 @@ input[type='number'].invalid {
   transform: scale(1);
   transition: transform 0.25s;
   background-color: transparent;
-  transition: transform 0.25s, background-color 0.25s;
-  -webkit-transition: transform 0.25s, background-color 0.25s;
+  pointer-events: auto;
+  opacity: 1;
+  transition: transform 0.25s, background-color 0.25s, opacity 0.25s;
+  -webkit-transition: transform 0.25s, background-color 0.25s, opacity 0.25s;
+}
+
+.gamemode-option.disabled {
+  opacity: 0.25;
+  pointer-events: none;
 }
 
 .gamemode-option:hover {
