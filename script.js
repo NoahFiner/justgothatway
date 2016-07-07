@@ -30,6 +30,7 @@ var startingLevel = 0;
 var highestLevel = 0;
 var lastEndCoords = [0, 0];
 var difficulty = "normal";
+var firstLevel = true;
 
 function mobileCheck() {
  if (navigator.userAgent.match(/Android/i) ||
@@ -46,6 +47,7 @@ function mobileCheck() {
 }
 
 var finish = function(lossParam) {
+  firstLevel = true;
   $("#score-outer > *").addClass("hidden");
   var lossType = lossParam || 0;
   instructions("", "", false);
@@ -493,10 +495,11 @@ var initLevel = function(level, wonParam) {
     clearTimeout(fireworkTimeout);
     clearTimeout(fireworkHideTimeout);
     clearTimeout(scoreHideTimeout);
-    if(currLevel > 0 && $(".end").length > 0) {
+    if(currLevel > 0 && $(".end").length > 0 && !(firstLevel)) {
       var fireworkOffset = $(".end").offset();
       firework(fireworkOffset.left*100/window.innerWidth, fireworkOffset.top*100/window.innerHeight, 10);
     }
+    firstLevel = false;
     score += 250;
     for(i = 0; i < bonuses.length; i++) {
       score += bonuses[i][0];
