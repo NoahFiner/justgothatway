@@ -213,7 +213,7 @@ var chooseMostRecentLevel = false;
 var levels = [
   [['t', 15], ['s', 10, 45, 10], ['r', 80, 10], ['e', 10], ['i', 60, 30, "Move your mouse right."]],
   [['t', 15], ['s', 10, 80, 10], ['u', 50, 10], ['r', 50, 10], ['e', 10], ['i', 50, 70, "Move your mouse up."], ['i', 50, 30, "Now move right."]],
-  [['t', 15], ['s', 40, 80, 10], ['u', 40, 10], ['r', 15, 10], ['d', 30, 10], ['e', 10], ['i', 10, 70, 'Go up.'], ['i', 40, 60, 'Now right.'], ['i', 70, 60, 'You can figure this<br>one out yourself.']],
+  [['t', 15], ['s', 40, 80, 10], ['u', 40, 10], ['r', 15, 10], ['d', 30, 10], ['e', 10], ['i', 10, 70, 'Go up.'], ['i', 40, 60, 'Now right.'], ['i', 70, 60, 'You can figure this one out yourself.']],
   [['t', 20], ['s', 10, 80, 10], ['r', 40, 10], ['u', 20, 10], ['r', 30, 10], ['u', 20, 10], ['l', 40, 10], ['e', 10], ['i', 10, 50, "Hey, you're pretty good at just going that way."], ['i', 0, 0, ""], ['i', 30, 30, "You're on your own now."], ['i', 0, 0, ""], ['i', 20, 50, "Oh yeah, also make sure you don't run out of time."]],
   [['t', 15], ['s', 10, 10, 10], ['r', 50, 10], ['d', 50, 10], ['l', 20, 10], ['u', 30, 10], ['l', 50, 10], ['e', 10]],
   [['t', 25], ['s', 50, 30, 10], ['u', 30, 10], ['r', 40, 10], ['d', 70, 10], ['l', 60, 10], ['u', 20, 10], ['l', 30, 10], ['u', 40, 10], ['e', 10], ['i', 0, 0, ""], ['i', 0, 0, ""], ['i', 0, 30, "By the way, if you get bored of the<br>classic gamemode, you can check<br>out endless in the main menu."], ['i', 0, 50, "Not like you will, though."]],
